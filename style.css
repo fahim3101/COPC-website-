@@ -1443,6 +1443,28 @@ a:focus-visible,
 }
 .timeline-card p { color: var(--text-muted); line-height: 1.6; }
 
+/* ============================================================
+   ACHIEVEMENTS
+   ============================================================ */
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.2rem;
+  text-align: center;
+}
+.achievement-card { padding: 2rem 1.5rem; }
+.achievement-number {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 2.6rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.achievement-label {
+  margin-top: 0.6rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
