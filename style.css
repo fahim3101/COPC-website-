@@ -1569,6 +1569,35 @@ a:focus-visible,
   font-size: 0.95rem;
 }
 
+/* ============================================================
+   SPONSORS MARQUEE STRIP
+   ============================================================ */
+.sponsors-marquee {
+  margin-top: 2.5rem;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+.marquee-track {
+  display: flex;
+  gap: 2.5rem;
+  width: max-content;
+  animation: marquee 22s linear infinite;
+}
+.sponsors-marquee:hover .marquee-track { animation-play-state: paused; }
+.marquee-logo {
+  white-space: nowrap;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  opacity: 0.85;
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
