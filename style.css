@@ -1369,6 +1369,35 @@ a:focus-visible,
 }
 [data-theme="light"] .event-date { color: var(--accent-cyan); }
 
+/* ============================================================
+   WHY JOIN US
+   ============================================================ */
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+.benefit-card { text-align: center; }
+.benefit-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1.2rem;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  font-size: 1.6rem;
+  color: #0a0a0f;
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
+  box-shadow: 0 8px 24px var(--glow);
+}
+.benefit-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.25rem;
+  margin-bottom: 0.6rem;
+  color: var(--text);
+}
+.benefit-card p { color: var(--text-muted); line-height: 1.6; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
