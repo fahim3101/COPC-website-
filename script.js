@@ -418,6 +418,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // 7b. Live 3D tilt for headings (subtle pointer-follow)
+  const tiltHeadings = document.querySelectorAll('.section-title, .hero-title, .event-title, .member-name, .stat-number');
+  if (tiltHeadings.length > 0 && !prefersReducedMotion && !('ontouchstart' in window)) {
+    tiltHeadings.forEach(h => {
+      h.addEventListener('mouseenter', () => { h.style.transition = 'transform 0.12s ease'; });
+      h.addEventListener('mousemove', (e) => {
+        const rect = h.getBoundingClientRect();
+        const xN = (e.clientX - rect.left - rect.width / 2) / (rect.width / 2);
+        const yN = (e.clientY - rect.top - rect.height / 2) / (rect.height / 2);
+        h.style.transform = `perspective(800px) rotateX(${(-yN * 6).toFixed(2)}deg) rotateY(${(xN * 6).toFixed(2)}deg)`;
+      });
+      h.addEventListener('mouseleave', () => {
+        h.style.transition = 'transform 0.5s ease';
+        h.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg)';
+      });
+    });
+  }
+
   // ==========================================================================
   // 7b. MAGNETIC 3D BUTTONS
   // ==========================================================================
