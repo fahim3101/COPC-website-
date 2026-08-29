@@ -1,9 +1,12 @@
 // Global 3D background scene for the entire CoPC site (navbar -> footer)
 // Renders a fixed, full-viewport WebGL canvas behind all content, giving the
-// whole page consistent depth: a hero "crystal" focal object plus an ambient
-// field of drifting shapes and particles that react to scroll & pointer.
+// whole page consistent depth: a hero "crystal" focal object, real extruded
+// 3D text, plus an ambient field of drifting shapes and particles that react
+// to scroll & pointer.
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 if (!prefersReducedMotion) initGlobalScene();
@@ -114,6 +117,47 @@ function initGlobalScene() {
   heroGroup.add(ringA, ringB);
 
   // ----------------------------------------------------------------
+  // Real extruded 3D text — the hero wordmark, rendered in WebGL
+  // ----------------------------------------------------------------
+  let heroText = null;
+  let heroTextMat = null;
+  let heroTextGeo = null;
+  const fontLoader = new FontLoader();
+  fontLoader.load(
+    'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/fonts/helvetiker_bold.typeface.json',
+    (font) => {
+      heroTextGeo = new TextGeometry('CoPC', {
+        font,
+        size: 2.4,
+        height: 0.7,
+        curveSegments: 14,
+        bevelEnabled: true,
+        bevelThickness: 0.08,
+        bevelSize: 0.05,
+        bevelOffset: 0,
+        bevelSegments: 5
+      });
+      heroTextGeo.center();
+      heroTextMat = new THREE.MeshPhysicalMaterial({
+        color: 0x00f0ff,
+        metalness: 0.9,
+        roughness: 0.15,
+        iridescence: 1,
+        iridescenceIOR: 1.3,
+        clearcoat: 1,
+        clearcoatRoughness: 0.1,
+        emissive: 0x031b1f,
+        emissiveIntensity: 0.4
+      });
+      heroText = new THREE.Mesh(heroTextGeo, heroTextMat);
+      heroText.position.set(0, 0.2, 2.2); // in front of the crystal
+      scene.add(heroText);
+    },
+    undefined,
+    (err) => console.warn('3D font failed to load, skipping 3D text.', err)
+  );
+
+  // ----------------------------------------------------------------
   // Ambient drifting shapes — fills the whole page with quiet 3D depth
   // ----------------------------------------------------------------
   const ambientGroup = new THREE.Group();
@@ -127,7 +171,7 @@ function initGlobalScene() {
   ];
 
   const ambientShapes = [];
-  const shapeCount = 34;
+  const shapeCount = 42;
   for (let i = 0; i < shapeCount; i++) {
     const geo = shapeGeometries[i % shapeGeometries.length];
     const isWire = Math.random() > 0.5;
@@ -258,6 +302,16 @@ function initGlobalScene() {
     ringA.material.opacity = 0.4 * heroFade;
     ringB.material.opacity = 0.4 * heroFade;
 
+    // Real 3D text: tilt toward the pointer, gentle float, fade with scroll
+    if (heroText) {
+      heroText.visible = heroVisible;
+      heroText.rotation.y = targetX * 0.5 + Math.sin(t * 0.6) * 0.06;
+      heroText.rotation.x = -targetY * 0.35 + Math.sin(t * 0.5) * 0.04;
+      heroText.position.y = 0.2 + Math.sin(t * 0.8) * 0.12;
+      heroTextMat.opacity = heroFade;
+      heroTextMat.transparent = true;
+    }
+
     // Ambient shapes: slow spin + float, gentle parallax travel with scroll
     ambientGroup.position.y = scrollNorm * 8;
     ambientShapes.forEach((m) => {
@@ -272,8 +326,8 @@ function initGlobalScene() {
     particles.rotation.y = t * 0.02;
 
     // Camera parallax + subtle scroll dolly
-    camera.position.x += (targetX * 1.2 - camera.position.x) * 0.03;
-    camera.position.y += (targetY * 1.2 - camera.position.y) * 0.03;
+    camera.position.x += (targetX * 1.6 - camera.position.x) * 0.03;
+    camera.position.y += (targetY * 1.6 - camera.position.y) * 0.03;
     camera.position.z = 12 - scrollNorm * 2;
     camera.lookAt(0, 0, 0);
 
@@ -308,5 +362,7 @@ function initGlobalScene() {
     shapeGeometries.forEach(g => g.dispose());
     ambientShapes.forEach(m => m.material.dispose());
     particleGeometry.dispose(); particleMaterial.dispose();
+    if (heroTextGeo) heroTextGeo.dispose();
+    if (heroTextMat) heroTextMat.dispose();
   });
 }

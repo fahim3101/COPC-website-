@@ -273,6 +273,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // 6. NAVIGATION
   // ==========================================================================
   const navbar = document.getElementById('navbar');
+  const scrollProgress = document.getElementById('scroll-progress');
+  const backToTop = document.getElementById('back-to-top');
   const navLinks = document.querySelectorAll('.nav-link');
   const sections = Array.from(navLinks).map(link => {
     const id = link.getAttribute('href');
@@ -283,6 +285,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }).filter(Boolean);
 
   const handleScroll = throttle(() => {
+    // 3D scroll-progress bar
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = maxScroll > 0 ? Math.min(window.scrollY / maxScroll, 1) : 0;
+    if (scrollProgress) scrollProgress.style.transform = `scaleX(${progress})`;
+
+    // Back-to-top visibility
+    if (backToTop) {
+      if (window.scrollY > 600) backToTop.classList.add('visible');
+      else backToTop.classList.remove('visible');
+    }
+
     // Navbar background change
     if (window.scrollY > 50) {
       navbar?.classList.add('scrolled');
@@ -311,6 +324,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }, 100);
 
   window.addEventListener('scroll', handleScroll, { passive: true });
+
+  // Back-to-top button
+  if (backToTop) {
+    backToTop.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+    });
+  }
 
   // Smooth scroll
   navLinks.forEach(link => {
@@ -365,7 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================================================
   // 7. 3D TILT CARD EFFECT
   // ==========================================================================
-  const tiltCards = document.querySelectorAll('.glass-card, .gallery-item');
+  const tiltCards = document.querySelectorAll('.glass-card, .gallery-item, .stat-card');
   if (tiltCards.length > 0 && !prefersReducedMotion && !('ontouchstart' in window)) {
     tiltCards.forEach(card => {
       card.addEventListener('mouseenter', () => {
@@ -384,9 +404,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const xNormalized = (x - centerX) / centerX;
         const yNormalized = (y - centerY) / centerY;
         
-        // Max rotation 8 degrees
-        const xRotation = xNormalized * 8;
-        const yRotation = -yNormalized * 8; // inverted for natural feel
+        // Max rotation 12 degrees for a stronger 3D tilt
+        const xRotation = xNormalized * 12;
+        const yRotation = -yNormalized * 12; // inverted for natural feel
         
         card.style.transform = `perspective(1000px) rotateX(${yRotation}deg) rotateY(${xRotation}deg)`;
       });
