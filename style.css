@@ -1598,6 +1598,37 @@ a:focus-visible,
   to { transform: translateX(-50%); }
 }
 
+/* ============================================================
+   LEARNING PATHS
+   ============================================================ */
+.paths-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+.path-card { text-align: center; }
+.path-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  margin: 0 auto 1.1rem;
+  display: grid;
+  place-items: center;
+  font-size: 1.5rem;
+  color: #0a0a0f;
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
+  box-shadow: 0 8px 24px var(--glow);
+}
+.path-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: var(--text);
+}
+.path-card p { color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem; }
+.path-link { color: var(--accent-cyan); font-weight: 600; text-decoration: none; }
+.path-link:hover { text-decoration: underline; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
