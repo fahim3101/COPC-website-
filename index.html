@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoPC — BUP Computer Programming Club</title>
+    <meta name="description" content="Official website of CoPC - BUP Computer Programming Club. Code, Compete, Conquer.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" href="https://bup.edu.bd/public/images/logo/favicon.ico">
+</head>
+<body>
+
+    <div id="cursor-glow"></div>
+
+    <div id="lightbox"><button class="lightbox-close">&times;</button><img src="" alt="Gallery Image"></div>
+
+    <nav id="navbar">
+      <a href="#hero" class="nav-logo">{ CoPC }</a>
+      <ul class="nav-links">
+        <li><a href="#hero" class="nav-link nav-active">Home</a></li>
+        <li><a href="#about" class="nav-link">About</a></li>
+        <li><a href="#events" class="nav-link">Events</a></li>
+        <li><a href="#activities" class="nav-link">Activities</a></li>
+        <li><a href="#team" class="nav-link">Team</a></li>
+        <li><a href="#gallery-section" class="nav-link">Gallery</a></li>
+        <li><a href="#contact" class="nav-link">Contact</a></li>
+      </ul>
+      <button id="mobile-menu-btn" aria-label="Toggle menu"><i class="fas fa-bars"></i></button>
+      <div id="mobile-menu">
+        <a href="#hero" class="nav-link">Home</a>
+        <a href="#about" class="nav-link">About</a>
+        <a href="#events" class="nav-link">Events</a>
+        <a href="#activities" class="nav-link">Activities</a>
+        <a href="#team" class="nav-link">Team</a>
+        <a href="#gallery-section" class="nav-link">Gallery</a>
+        <a href="#contact" class="nav-link">Contact</a>
+      </div>
+    </nav>
+
+    <section id="hero">
+      <canvas id="matrix-canvas"></canvas>
+      <canvas id="particles-canvas"></canvas>
+      <div class="hero-content">
+        <div class="hero-badge">&lt; Department of CSE, BUP /&gt;</div>
+        <h1 class="hero-title">BUP Computer<br><span class="gradient-text">Programming Club</span></h1>
+        <p class="hero-motto">&gt; <span id="typewriter"></span></p>
+        <div class="hero-buttons">
+          <a href="#events" class="cta-btn cta-btn-primary"><i class="fas fa-rocket"></i> Explore Events</a>
+          <a href="https://www.facebook.com/bupcopc" target="_blank" class="cta-btn cta-btn-outline"><i class="fab fa-facebook"></i> Join Us</a>
+        </div>
+      </div>
+      <div class="scroll-indicator"><span></span></div>
+    </section>
+
+    <section id="about" class="section">
+      <div class="section-header">
+        <h2 class="section-title">About <span class="gradient-text">CoPC</span></h2>
+        <p class="section-subtitle">The BUP Computer Programming Club, founded in January 2024, is dedicated to advancing knowledge in computer science and cybersecurity. With the motto "Code, Compete, Conquer" the club offers interactive workshops, competitions, and mentorship to bridge theoretical learning with practical application.</p>
+        <div class="section-divider"></div>
+      </div>
+      <div class="about-grid">
+        <div class="glass-card about-card reveal reveal-up">
+          <span class="card-icon">🎯</span>
+          <h3>Our Mission</h3>
+          <p>To cultivate technical expertise, foster teamwork, and instill a commitment to excellence, particularly in programming and cybersecurity, empowering members for success in the tech industry.</p>
+        </div>
+        <div class="glass-card about-card reveal reveal-up">
+          <span class="card-icon">🔭</span>
+          <h3>Our Vision</h3>
+          <p>To transform learners into proficient, inventive technologists dedicated to ethical conduct, embracing diversity, and making a positive societal contribution, while shaping the future of technology responsibly.</p>
+        </div>
+        <div class="glass-card about-card reveal reveal-up">
+          <span class="card-icon">⚡</span>
+          <h3>Our Motto</h3>
+          <p>"Code, Compete, Conquer" — We believe in learning by doing, competing to grow, and conquering challenges through innovation and teamwork.</p>
+        </div>
+      </div>
+    </section>
+
+    <div id="stats" class="stats-container">
+      <div class="stats-grid">
+        <div class="stat-card reveal reveal-up">
+          <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
+          <div class="stat-number" data-target="2024" data-static="true">2024</div>
+          <div class="stat-label">Founded</div>
+        </div>
+        <div class="stat-card reveal reveal-up">
+          <div class="stat-icon"><i class="fas fa-users"></i></div>
+          <div class="stat-number" data-target="500" data-suffix="+">0</div>
+          <div class="stat-label">Community</div>
+        </div>
+        <div class="stat-card reveal reveal-up">
+          <div class="stat-icon"><i class="fas fa-trophy"></i></div>
+          <div class="stat-number" data-target="110000" data-prefix="৳">0</div>
+          <div class="stat-label">Prize Pool (BDT)</div>
+        </div>
+        <div class="stat-card reveal reveal-up">
+          <div class="stat-icon"><i class="fas fa-code"></i></div>
+          <div class="stat-number" data-target="10" data-suffix="+">0</div>
+          <div class="stat-label">Events Hosted</div>
+        </div>
+      </div>
+    </div>
+
+    <section id="events" class="section">
+      <div class="section-header">
+        <h2 class="section-title">Our <span class="gradient-text">Events</span></h2>
+        <p class="section-subtitle">From competitive programming to hackathons, we bring the best tech events to BUP.</p>
+        <div class="section-divider"></div>
+      </div>
+      <div class="events-grid">
+        <!-- Event 1: Tech Carnival -->
+        <div class="glass-card event-card tilt-card glow-border reveal reveal-up">
+          <div class="event-image-wrapper">
+            <img class="event-image" src="https://bup.edu.bd/public/upload/news/20250930_1759207764.jpg" alt="BUP CSE Tech Carnival 2025" loading="lazy">
+          </div>
+          <div class="event-content">
+            <div class="event-date">📅 Sep 24-25, 2025</div>
+            <h3 class="event-title">DSI Presents BUP CSE Tech Carnival 2025</h3>
+            <p class="event-desc">A two-day carnival featuring Competitive Programming, CTF, Hackathon & Gaming Tournament. Total prize pool of ১,১০,০০০ BDT with universities from across Bangladesh.</p>
+            <div class="event-tags">
+              <span class="event-tag">Competitive Programming</span>
+              <span class="event-tag">CTF</span>
+              <span class="event-tag">Hackathon</span>
+              <span class="event-tag">Gaming</span>
+            </div>
+          </div>
+        </div>
+        <!-- Event 2: Higher Studies -->
+        <div class="glass-card event-card tilt-card glow-border reveal reveal-up">
+          <div class="event-image-wrapper">
+            <img class="event-image" src="https://bup.edu.bd/public/upload/news/20250602_1748851316.jpg" alt="Higher Studies Lecture" loading="lazy">
+          </div>
+          <div class="event-content">
+            <div class="event-date">📅 May 22, 2025</div>
+            <h3 class="event-title">Planning Ahead: Higher Studies in CSE</h3>
+            <p class="event-desc">A lecture guiding students on pursuing higher education abroad, featuring keynote speakers from Australia, Bangladesh, South Korea & USA at Shadhinota Auditorium, BUP.</p>
+            <div class="event-tags">
+              <span class="event-tag">Seminar</span>
+              <span class="event-tag">Higher Studies</span>
+              <span class="event-tag">Career</span>
+            </div>
+          </div>
+        </div>
+        <!-- Event 3: GP Collaboration -->
+        <div class="glass-card event-card tilt-card glow-border reveal reveal-up">
+          <div class="event-image-wrapper">
+            <img class="event-image" src="https://bup.edu.bd/public/upload/news/20260616_1781594132.jpeg" alt="BUP Grameenphone Collaboration" loading="lazy">
+          </div>
+          <div class="event-content">
+            <div class="event-date">📅 Jun 14, 2026</div>
+            <h3 class="event-title">BUP × Grameenphone Collaboration</h3>
+            <p class="event-desc">Industry-Academia collaboration on Sustainability Reporting & Youth Upskilling, bridging academic learning with real-world industry practices.</p>
+            <div class="event-tags">
+              <span class="event-tag">Industry</span>
+              <span class="event-tag">Collaboration</span>
+              <span class="event-tag">Grameenphone</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="activities" class="section">
+      <div class="section-header">
+        <h2 class="section-title">What We <span class="gradient-text">Do</span></h2>
+        <p class="section-subtitle">Bridging the gap between theory and practice through hands-on tech activities.</p>
+        <div class="section-divider"></div>
+      </div>
+      <div class="activities-grid">
+        <div class="glass-card activity-card reveal reveal-up">
+          <div class="activity-icon">💻</div>
+          <h3>Competitive Programming</h3>
+          <p>Regular contests to sharpen problem-solving skills, from beginner to advanced levels.</p>
+        </div>
+        <div class="glass-card activity-card reveal reveal-up">
+          <div class="activity-icon">🛡️</div>
+          <h3>Cybersecurity & CTF</h3>
+          <p>Capture the Flag competitions powered by Knight Squad to build security expertise.</p>
+        </div>
+        <div class="glass-card activity-card reveal reveal-up">
+          <div class="activity-icon">🚀</div>
+          <h3>Hackathons</h3>
+          <p>Build innovative solutions to real-world problems in intensive coding sprints.</p>
+        </div>
+        <div class="glass-card activity-card reveal reveal-up">
+          <div class="activity-icon">📚</div>
+          <h3>Workshops & Seminars</h3>
+          <p>Interactive sessions on latest tech trends, career guidance, and skill development.</p>
+        </div>
+        <div class="glass-card activity-card reveal reveal-up">
+          <div class="activity-icon">🤝</div>
+          <h3>Industry Collaboration</h3>
+          <p>Partnerships with tech firms like Grameenphone, DSI, Brain Station 23 for real-world exposure.</p>
+        </div>
+        <div class="glass-card activity-card reveal reveal-up">
+          <div class="activity-icon">🏆</div>
+          <h3>Gaming Tournaments</h3>
+          <p>FIFA, Valorant and e-sports tournaments for the competitive gaming community.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="team" class="section">
+      <div class="section-header">
+        <h2 class="section-title">Our <span class="gradient-text">Team</span></h2>
+        <p class="section-subtitle">The dedicated people behind CoPC who make it all happen.</p>
+        <div class="section-divider"></div>
+      </div>
+      <div class="team-grid">
+        <div class="glass-card team-card tilt-card reveal reveal-up">
+          <img class="member-photo" src="http://hr.bup.edu.bd/upload/picture/43401.jpg" alt="Rumana Yasmin" onerror="this.src='https://bup.edu.bd/public/upload/user-dummy.jpeg'">
+          <h3 class="member-name">Rumana Yasmin</h3>
+          <p class="member-role">Club Moderator</p>
+          <p class="member-dept">Department of CSE, BUP</p>
+        </div>
+        <div class="glass-card team-card tilt-card reveal reveal-up">
+          <img class="member-photo" src="https://bup.edu.bd/public/upload/user-dummy.jpeg" alt="President">
+          <h3 class="member-name">Coming Soon</h3>
+          <p class="member-role">President</p>
+          <p class="member-dept">To Be Announced</p>
+        </div>
+        <div class="glass-card team-card tilt-card reveal reveal-up">
+          <img class="member-photo" src="https://bup.edu.bd/public/upload/user-dummy.jpeg" alt="Vice President">
+          <h3 class="member-name">Coming Soon</h3>
+          <p class="member-role">Vice President</p>
+          <p class="member-dept">To Be Announced</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="gallery-section" class="section">
+      <div class="section-header">
+        <h2 class="section-title">Photo <span class="gradient-text">Gallery</span></h2>
+        <p class="section-subtitle">Moments from our events and activities.</p>
+        <div class="section-divider"></div>
+      </div>
+      <div class="gallery-grid">
+        <div class="gallery-item reveal reveal-up">
+          <img src="https://bup.edu.bd/public/upload/slider/20230210_1676004771794.jpg" alt="BUP Campus" loading="lazy">
+          <div class="gallery-overlay"><p>BUP Campus</p></div>
+        </div>
+        <div class="gallery-item reveal reveal-up">
+          <img src="https://bup.edu.bd/public/upload/news/20250930_1759207764.jpg" alt="Tech Carnival 2025" loading="lazy">
+          <div class="gallery-overlay"><p>Tech Carnival 2025</p></div>
+        </div>
+        <div class="gallery-item reveal reveal-up">
+          <img src="https://bup.edu.bd/public/upload/slider/20250423_1745389393848.JPG" alt="Club Activities" loading="lazy">
+          <div class="gallery-overlay"><p>Club Activities</p></div>
+        </div>
+        <div class="gallery-item reveal reveal-up">
+          <img src="https://bup.edu.bd/public/upload/news/20250602_1748851316.jpg" alt="Higher Studies Seminar" loading="lazy">
+          <div class="gallery-overlay"><p>Higher Studies Seminar</p></div>
+        </div>
+        <div class="gallery-item reveal reveal-up">
+          <img src="https://bup.edu.bd/public/upload/news/20260616_1781594132.jpeg" alt="GP Collaboration" loading="lazy">
+          <div class="gallery-overlay"><p>GP Collaboration</p></div>
+        </div>
+        <div class="gallery-item reveal reveal-up">
+          <img src="https://bup.edu.bd/public/upload/banner/20230313_1678702875.png" alt="BUP CSE Department" loading="lazy">
+          <div class="gallery-overlay"><p>BUP CSE Department</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sponsors" class="section">
+      <div class="section-header">
+        <h2 class="section-title">Our <span class="gradient-text">Partners & Sponsors</span></h2>
+        <div class="section-divider"></div>
+      </div>
+      <div class="sponsors-grid">
+        <div class="sponsor-pill">Dynamic Solution Innovators<span class="sponsor-type">Title Sponsor</span></div>
+        <div class="sponsor-pill">Brain Station 23<span class="sponsor-type">Gold Sponsor</span></div>
+        <div class="sponsor-pill">Programming Hero<span class="sponsor-type">Technical Partner</span></div>
+        <div class="sponsor-pill">Knight Squad<span class="sponsor-type">Technical Partner</span></div>
+        <div class="sponsor-pill">Got My Host<span class="sponsor-type">Technical Partner</span></div>
+      </div>
+    </section>
+
+    <section id="contact" class="section">
+      <div class="section-header">
+        <h2 class="section-title">Get In <span class="gradient-text">Touch</span></h2>
+        <div class="section-divider"></div>
+      </div>
+      <div class="contact-grid">
+        <div class="glass-card reveal reveal-left">
+          <div class="contact-item">
+            <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+            <div><h4>Location</h4><p>Mirpur Cantonment, Dhaka-1216, Bangladesh</p></div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+            <div><h4>Email</h4><p>info@bup.edu.bd</p></div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon"><i class="fas fa-phone"></i></div>
+            <div><h4>Phone</h4><p>+8809666790799</p></div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon"><i class="fas fa-university"></i></div>
+            <div><h4>Under</h4><p>Department of CSE, Faculty of Science & Technology, BUP</p></div>
+          </div>
+          <div class="social-links">
+            <a href="https://www.facebook.com/bupcopc" target="_blank" class="social-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://bup.edu.bd" target="_blank" class="social-link" aria-label="Website"><i class="fas fa-globe"></i></a>
+          </div>
+        </div>
+        <div class="glass-card join-card reveal reveal-right">
+          <h3>Join <span class="gradient-text">CoPC</span> Today!</h3>
+          <p>Are you a BUP student passionate about programming, cybersecurity, or technology? Join our community of coders, innovators, and tech enthusiasts. Together, we Code, Compete, and Conquer!</p>
+          <a href="https://www.facebook.com/bupcopc" target="_blank" class="cta-btn cta-btn-primary"><i class="fab fa-facebook"></i> Join on Facebook</a>
+        </div>
+      </div>
+    </section>
+
+    <footer id="footer">
+      <div class="footer-content">
+        <a href="#hero" class="footer-logo">{ CoPC }</a>
+        <p class="footer-text">© 2024-2026 BUP Computer Programming Club. All rights reserved.</p>
+        <p class="footer-text">Made with <span class="footer-heart">❤</span> by CoPC</p>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
