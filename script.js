@@ -682,4 +682,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // 9. NEWSLETTER SUBSCRIBE (client-side validation)
+  const newsletterForm = document.querySelector('.newsletter-form');
+  if (newsletterForm) {
+    const input = newsletterForm.querySelector('.newsletter-input');
+    const msg = newsletterForm.parentElement.querySelector('.newsletter-msg');
+    newsletterForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const value = (input.value || '').trim();
+      const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+      if (!valid) {
+        msg.style.color = '#f72585';
+        msg.textContent = 'Please enter a valid email address.';
+        input.focus();
+        return;
+      }
+      msg.style.color = '';
+      msg.textContent = "Thanks! You're on the list. We'll be in touch. ✅";
+      newsletterForm.reset();
+    });
+  }
+
 });
