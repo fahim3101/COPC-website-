@@ -365,7 +365,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================================================
   // 7. 3D TILT CARD EFFECT
   // ==========================================================================
-  const tiltCards = document.querySelectorAll('.tilt-card');
+  const tiltCards = document.querySelectorAll('.glass-card, .gallery-item');
   if (tiltCards.length > 0 && !prefersReducedMotion && !('ontouchstart' in window)) {
     tiltCards.forEach(card => {
       card.addEventListener('mouseenter', () => {
@@ -394,6 +394,24 @@ document.addEventListener('DOMContentLoaded', () => {
       card.addEventListener('mouseleave', () => {
         card.style.transition = 'transform 0.5s ease';
         card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+      });
+    });
+  }
+
+  // ==========================================================================
+  // 7b. MAGNETIC 3D BUTTONS
+  // ==========================================================================
+  const magneticBtns = document.querySelectorAll('.cta-btn, .social-link');
+  if (magneticBtns.length > 0 && !prefersReducedMotion && !('ontouchstart' in window)) {
+    magneticBtns.forEach(btn => {
+      btn.addEventListener('mousemove', (e) => {
+        const rect = btn.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        btn.style.transform = `translate(${x * 0.25}px, ${y * 0.35}px)`;
+      });
+      btn.addEventListener('mouseleave', () => {
+        btn.style.transform = 'translate(0, 0)';
       });
     });
   }

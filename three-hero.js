@@ -1,333 +1,312 @@
-// Three.js 3D Hero Scene for CoPC Website
+// Global 3D background scene for the entire CoPC site (navbar -> footer)
+// Renders a fixed, full-viewport WebGL canvas behind all content, giving the
+// whole page consistent depth: a hero "crystal" focal object plus an ambient
+// field of drifting shapes and particles that react to scroll & pointer.
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (!prefersReducedMotion) initGlobalScene();
 
-if (!prefersReducedMotion) {
-  initThreeHero();
-}
+function initGlobalScene() {
+  const canvas = document.getElementById('bg-3d');
+  if (!canvas) return;
 
-function initThreeHero() {
-  const container = document.getElementById('three-container');
-  if (!container) return;
-
-  // Scene setup
-  const scene = new THREE.Scene();
-  
-  // Camera
-  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.z = 5;
-
-  // Renderer
+  // ----------------------------------------------------------------
+  // Renderer (uses the existing fixed canvas)
+  // ----------------------------------------------------------------
   let renderer;
   try {
     renderer = new THREE.WebGLRenderer({
+      canvas,
       alpha: true,
       antialias: true,
       powerPreference: 'high-performance'
     });
   } catch (err) {
-    console.warn('WebGL not supported, skipping 3D hero.', err);
+    console.warn('WebGL not supported, skipping 3D background.', err);
     return;
   }
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setClearColor(0x000000, 0);
-  container.appendChild(renderer.domElement);
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.1;
 
-  // ============================================
-  // 3D Objects
-  // ============================================
+  // ----------------------------------------------------------------
+  // Scene & Camera
+  // ----------------------------------------------------------------
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x0a0a0f, 0.035);
 
-  // Main floating geometric shape - Torus Knot (code-like, infinite loop)
-  const knotGeometry = new THREE.TorusKnotGeometry(1.2, 0.35, 120, 16);
-  const knotMaterial = new THREE.MeshPhysicalMaterial({
-    color: 0x00f0ff,
-    metalness: 0.8,
-    roughness: 0.2,
-    transmission: 0.3,
-    thickness: 0.5,
-    ior: 1.5,
-    clearcoat: 1,
-    clearcoatRoughness: 0.1,
-    side: THREE.DoubleSide
-  });
-  const torusKnot = new THREE.Mesh(knotGeometry, knotMaterial);
-  scene.add(torusKnot);
+  const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 200);
+  camera.position.set(0, 0, 12);
 
-  // Inner glow core
-  const coreGeometry = new THREE.SphereGeometry(0.5, 32, 32);
-  const coreMaterial = new THREE.MeshBasicMaterial({
-    color: 0x8b5cf6,
-    transparent: true,
-    opacity: 0.4,
-    side: THREE.BackSide
-  });
-  const core = new THREE.Mesh(coreGeometry, coreMaterial);
-  scene.add(core);
-
-  // Floating code particles around the knot
-  const particleCount = 300;
-  const particleGeometry = new THREE.BufferGeometry();
-  const particlePositions = new Float32Array(particleCount * 3);
-  const particleColors = new Float32Array(particleCount * 3);
-  const particleVelocities = new Float32Array(particleCount * 3);
-
-  for (let i = 0; i < particleCount; i++) {
-    const radius = 2 + Math.random() * 3;
-    const theta = Math.random() * Math.PI * 2;
-    const phi = Math.acos(2 * Math.random() - 1);
-    
-    particlePositions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
-    particlePositions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-    particlePositions[i * 3 + 2] = radius * Math.cos(phi);
-    
-    // Cyan to purple gradient
-    const color = new THREE.Color();
-    color.setHSL(0.55 + Math.random() * 0.15, 1, 0.5 + Math.random() * 0.3);
-    particleColors[i * 3] = color.r;
-    particleColors[i * 3 + 1] = color.g;
-    particleColors[i * 3 + 2] = color.b;
-
-    // Random velocity for floating
-    particleVelocities[i * 3] = (Math.random() - 0.5) * 0.002;
-    particleVelocities[i * 3 + 1] = (Math.random() - 0.5) * 0.002;
-    particleVelocities[i * 3 + 2] = (Math.random() - 0.5) * 0.002;
-  }
-
-  particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
-  particleGeometry.setAttribute('color', new THREE.BufferAttribute(particleColors, 3));
-
-  const particleMaterial = new THREE.PointsMaterial({
-    size: 0.04,
-    vertexColors: true,
-    transparent: true,
-    opacity: 0.8,
-    sizeAttenuation: true,
-    blending: THREE.AdditiveBlending,
-    depthWrite: false
-  });
-
-  const particles = new THREE.Points(particleGeometry, particleMaterial);
-  scene.add(particles);
-
-  // Wireframe cube grid (background structure)
-  const gridGroup = new THREE.Group();
-  const gridSize = 8;
-  const gridDivisions = 8;
-  const gridHelper = new THREE.GridHelper(gridSize, gridDivisions, 0x00f0ff, 0x8b5cf6);
-  gridHelper.material.opacity = 0.1;
-  gridHelper.material.transparent = true;
-  gridHelper.material.depthWrite = false;
-  gridHelper.position.y = -3;
-  gridGroup.add(gridHelper);
-  
-  // Rotating wireframe cubes
-  const cubeCount = 5;
-  const cubes = [];
-  for (let i = 0; i < cubeCount; i++) {
-    const size = 0.3 + Math.random() * 0.4;
-    const cubeGeo = new THREE.BoxGeometry(size, size, size);
-    const cubeMat = new THREE.MeshBasicMaterial({
-      color: new THREE.Color().setHSL(0.55 + Math.random() * 0.15, 1, 0.5),
-      wireframe: true,
-      transparent: true,
-      opacity: 0.3
-    });
-    const cube = new THREE.Mesh(cubeGeo, cubeMat);
-    cube.position.set(
-      (Math.random() - 0.5) * 10,
-      (Math.random() - 0.5) * 10,
-      (Math.random() - 0.5) * 10
-    );
-    cube.userData = {
-      baseX: cube.position.x,
-      baseY: cube.position.y,
-      rotSpeed: {
-        x: (Math.random() - 0.5) * 0.01,
-        y: (Math.random() - 0.5) * 0.01,
-        z: (Math.random() - 0.5) * 0.01
-      },
-      floatOffset: Math.random() * Math.PI * 2,
-      floatSpeed: 0.4 + Math.random() * 0.8
-    };
-    cubes.push(cube);
-    gridGroup.add(cube);
-  }
-  scene.add(gridGroup);
-
-  // ============================================
-  // Lighting
-  // ============================================
-  // Environment map so the metallic knot has something to reflect
+  // Soft reflections for the glassy materials
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
   pmrem.dispose();
 
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-  scene.add(ambientLight);
+  // ----------------------------------------------------------------
+  // Lighting — clean two-tone cyan / violet
+  // ----------------------------------------------------------------
+  scene.add(new THREE.AmbientLight(0xffffff, 0.45));
 
-  const pointLight1 = new THREE.PointLight(0x00f0ff, 6, 30);
-  pointLight1.position.set(3, 3, 3);
-  scene.add(pointLight1);
+  const keyLight = new THREE.PointLight(0x00f0ff, 60, 80);
+  keyLight.position.set(6, 6, 10);
+  scene.add(keyLight);
 
-  const pointLight2 = new THREE.PointLight(0x8b5cf6, 6, 30);
-  pointLight2.position.set(-3, -2, 2);
-  scene.add(pointLight2);
+  const fillLight = new THREE.PointLight(0x8b5cf6, 45, 80);
+  fillLight.position.set(-8, -4, 6);
+  scene.add(fillLight);
 
-  const pointLight3 = new THREE.PointLight(0xff00ff, 3, 30);
-  pointLight3.position.set(0, 4, -3);
-  scene.add(pointLight3);
+  const rimLight = new THREE.DirectionalLight(0xffffff, 1.0);
+  rimLight.position.set(0, 3, -8);
+  scene.add(rimLight);
 
-  // ============================================
-  // Mouse Interaction
-  // ============================================
-  let mouseX = 0;
-  let mouseY = 0;
-  let targetX = 0;
-  let targetY = 0;
+  // ----------------------------------------------------------------
+  // Hero focal crystal (prominent at top, fades as you scroll)
+  // ----------------------------------------------------------------
+  const heroGroup = new THREE.Group();
+  scene.add(heroGroup);
 
-  document.addEventListener('mousemove', (e) => {
-    mouseX = (e.clientX / window.innerWidth) * 2 - 1;
-    mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
-  }, { passive: true });
+  const coreGeometry = new THREE.IcosahedronGeometry(1.6, 0);
+  const coreMaterial = new THREE.MeshPhysicalMaterial({
+    color: 0x0a0e1a,
+    metalness: 0.1,
+    roughness: 0.05,
+    transmission: 0.9,
+    thickness: 1.8,
+    ior: 1.6,
+    iridescence: 1,
+    iridescenceIOR: 1.3,
+    iridescenceThicknessRange: [100, 600],
+    clearcoat: 1,
+    clearcoatRoughness: 0.1,
+    attenuationColor: 0x00f0ff,
+    attenuationDistance: 3,
+    transparent: true,
+    opacity: 1
+  });
+  const core = new THREE.Mesh(coreGeometry, coreMaterial);
+  heroGroup.add(core);
 
-  // Touch support
-  document.addEventListener('touchmove', (e) => {
-    if (e.touches.length > 0) {
-      mouseX = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
-      mouseY = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
-    }
-  }, { passive: true });
+  const shellGeometry = new THREE.IcosahedronGeometry(2.5, 1);
+  const shellMaterial = new THREE.MeshBasicMaterial({
+    color: 0x00f0ff,
+    wireframe: true,
+    transparent: true,
+    opacity: 0.12,
+    depthWrite: false
+  });
+  const shell = new THREE.Mesh(shellGeometry, shellMaterial);
+  heroGroup.add(shell);
 
-  // ============================================
-  // Scroll Parallax
-  // ============================================
-  let scrollY = 0;
-  window.addEventListener('scroll', () => {
-    scrollY = window.scrollY;
-  }, { passive: true });
+  function makeRing(radius, tube, color, tilt) {
+    const geo = new THREE.TorusGeometry(radius, tube, 16, 140);
+    const mat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.4, depthWrite: false });
+    const ring = new THREE.Mesh(geo, mat);
+    ring.rotation.set(tilt.x, tilt.y, tilt.z);
+    return ring;
+  }
+  const ringA = makeRing(3.1, 0.012, 0x00f0ff, { x: Math.PI / 2.4, y: 0, z: 0.3 });
+  const ringB = makeRing(3.5, 0.012, 0x8b5cf6, { x: Math.PI / 3, y: 0.5, z: 0 });
+  heroGroup.add(ringA, ringB);
 
-  // ============================================
-  // Animation Loop
-  // ============================================
-  let time = 0;
-  let heroVisible = true;
+  // ----------------------------------------------------------------
+  // Ambient drifting shapes — fills the whole page with quiet 3D depth
+  // ----------------------------------------------------------------
+  const ambientGroup = new THREE.Group();
+  scene.add(ambientGroup);
 
-  if ('IntersectionObserver' in window) {
-    new IntersectionObserver((entries) => {
-      heroVisible = entries[0].isIntersecting;
-    }, { threshold: 0 }).observe(container);
+  const shapeGeometries = [
+    new THREE.IcosahedronGeometry(0.5, 0),
+    new THREE.OctahedronGeometry(0.5, 0),
+    new THREE.TetrahedronGeometry(0.6, 0),
+    new THREE.TorusGeometry(0.4, 0.14, 12, 24)
+  ];
+
+  const ambientShapes = [];
+  const shapeCount = 34;
+  for (let i = 0; i < shapeCount; i++) {
+    const geo = shapeGeometries[i % shapeGeometries.length];
+    const isWire = Math.random() > 0.5;
+    const mat = isWire
+      ? new THREE.MeshBasicMaterial({
+          color: new THREE.Color().setHSL(0.55 + Math.random() * 0.2, 0.9, 0.6),
+          wireframe: true,
+          transparent: true,
+          opacity: 0.18,
+          depthWrite: false
+        })
+      : new THREE.MeshPhysicalMaterial({
+          color: 0x0a0e1a,
+          metalness: 0.2,
+          roughness: 0.1,
+          transmission: 0.6,
+          transparent: true,
+          opacity: 0.5,
+          clearcoat: 1,
+          clearcoatRoughness: 0.15
+        });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set(
+      (Math.random() - 0.5) * 26,
+      (Math.random() - 0.5) * 40,
+      -2 - Math.random() * 16
+    );
+    const s = 0.5 + Math.random() * 1.4;
+    mesh.scale.setScalar(s);
+    mesh.userData = {
+      rotSpeed: new THREE.Vector3(
+        (Math.random() - 0.5) * 0.01,
+        (Math.random() - 0.5) * 0.01,
+        (Math.random() - 0.5) * 0.01
+      ),
+      floatPhase: Math.random() * Math.PI * 2,
+      floatSpeed: 0.3 + Math.random() * 0.5,
+      baseY: mesh.position.y
+    };
+    ambientShapes.push(mesh);
+    ambientGroup.add(mesh);
   }
 
+  // ----------------------------------------------------------------
+  // Particle field (clean, sparse)
+  // ----------------------------------------------------------------
+  const particleCount = 220;
+  const particleGeometry = new THREE.BufferGeometry();
+  const particlePositions = new Float32Array(particleCount * 3);
+  const particleColors = new Float32Array(particleCount * 3);
+  for (let i = 0; i < particleCount; i++) {
+    const r = 4 + Math.random() * 18;
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    particlePositions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+    particlePositions[i * 3 + 1] = (Math.random() - 0.5) * 50;
+    particlePositions[i * 3 + 2] = -Math.random() * 20;
+    const color = new THREE.Color().setHSL(0.55 + Math.random() * 0.2, 0.9, 0.6);
+    particleColors[i * 3] = color.r;
+    particleColors[i * 3 + 1] = color.g;
+    particleColors[i * 3 + 2] = color.b;
+  }
+  particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+  particleGeometry.setAttribute('color', new THREE.BufferAttribute(particleColors, 3));
+  const particleMaterial = new THREE.PointsMaterial({
+    size: 0.05,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.6,
+    sizeAttenuation: true,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false
+  });
+  const particles = new THREE.Points(particleGeometry, particleMaterial);
+  scene.add(particles);
+
+  // ----------------------------------------------------------------
+  // Interaction — pointer parallax + scroll travel
+  // ----------------------------------------------------------------
+  let mouseX = 0, mouseY = 0, targetX = 0, targetY = 0;
+  const onPointer = (cx, cy) => {
+    mouseX = (cx / window.innerWidth) * 2 - 1;
+    mouseY = -(cy / window.innerHeight) * 2 + 1;
+  };
+  document.addEventListener('mousemove', (e) => onPointer(e.clientX, e.clientY), { passive: true });
+  document.addEventListener('touchmove', (e) => {
+    if (e.touches.length) onPointer(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: true });
+
+  let scrollNorm = 0;
+  const updateScroll = () => {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    scrollNorm = max > 0 ? Math.min(window.scrollY / max, 1) : 0;
+  };
+  window.addEventListener('scroll', updateScroll, { passive: true });
+  updateScroll();
+
+  // ----------------------------------------------------------------
+  // Animation loop
+  // ----------------------------------------------------------------
+  const clock = new THREE.Clock();
   function animate() {
     requestAnimationFrame(animate);
+    if (document.hidden) return;
 
-    // Skip all work (and rendering) when the hero is off-screen or the tab is hidden
-    if (!heroVisible || document.hidden) return;
+    const t = clock.getElapsedTime();
 
-    time += 0.01;
+    // Smooth pointer follow
+    targetX += (mouseX - targetX) * 0.04;
+    targetY += (mouseY - targetY) * 0.04;
 
-    // Smooth mouse follow
-    targetX += (mouseX - targetX) * 0.05;
-    targetY += (mouseY - targetY) * 0.05;
+    // Hero crystal: calm rotation, fades out as you leave the hero
+    core.rotation.x = t * 0.15;
+    core.rotation.y = t * 0.2;
+    shell.rotation.y = -t * 0.08;
+    shell.rotation.z = t * 0.05;
+    ringA.rotation.z = t * 0.3;
+    ringB.rotation.z = -t * 0.22;
+    ringGroupRotate(heroGroup, t);
+    const heroFade = Math.max(0, 1 - window.scrollY / 600);
+    const heroVisible = heroFade > 0.02;
+    core.visible = heroVisible;
+    shell.visible = heroVisible;
+    ringA.visible = heroVisible;
+    ringB.visible = heroVisible;
+    coreMaterial.opacity = heroFade;
+    shellMaterial.opacity = 0.12 * heroFade;
+    ringA.material.opacity = 0.4 * heroFade;
+    ringB.material.opacity = 0.4 * heroFade;
 
-    // Torus knot rotation
-    torusKnot.rotation.x += 0.003;
-    torusKnot.rotation.y += 0.005;
-    torusKnot.rotation.z += 0.002;
-
-    // Mouse influence on knot
-    torusKnot.rotation.x += targetY * 0.1;
-    torusKnot.rotation.y += targetX * 0.1;
-
-    // Core pulse
-    const pulseScale = 1 + Math.sin(time * 2) * 0.1;
-    core.scale.setScalar(pulseScale);
-    core.rotation.y += 0.002;
-
-    // Particles floating
-    const positions = particleGeometry.attributes.position.array;
-    for (let i = 0; i < particleCount; i++) {
-      positions[i * 3] += particleVelocities[i * 3];
-      positions[i * 3 + 1] += particleVelocities[i * 3 + 1];
-      positions[i * 3 + 2] += particleVelocities[i * 3 + 2];
-
-      // Wrap around
-      const dist = Math.sqrt(
-        positions[i * 3] ** 2 + 
-        positions[i * 3 + 1] ** 2 + 
-        positions[i * 3 + 2] ** 2
-      );
-      if (dist > 6) {
-        // Reset to opposite side
-        positions[i * 3] *= -0.5;
-        positions[i * 3 + 1] *= -0.5;
-        positions[i * 3 + 2] *= -0.5;
-      }
-    }
-    particleGeometry.attributes.position.needsUpdate = true;
-
-    // Rotate particle system slowly
-    particles.rotation.y += 0.0002;
-    particles.rotation.x += 0.0001;
-
-    // Floating cubes (oscillate around their stored start position, no drift)
-    cubes.forEach((cube) => {
-      cube.rotation.x += cube.userData.rotSpeed.x;
-      cube.rotation.y += cube.userData.rotSpeed.y;
-      cube.rotation.z += cube.userData.rotSpeed.z;
-
-      const floatPhase = time * cube.userData.floatSpeed + cube.userData.floatOffset;
-      cube.position.y = cube.userData.baseY + Math.sin(floatPhase) * 0.5;
-      cube.position.x = cube.userData.baseX + Math.cos(floatPhase) * 0.3;
+    // Ambient shapes: slow spin + float, gentle parallax travel with scroll
+    ambientGroup.position.y = scrollNorm * 8;
+    ambientShapes.forEach((m) => {
+      const u = m.userData;
+      m.rotation.x += u.rotSpeed.x;
+      m.rotation.y += u.rotSpeed.y;
+      m.rotation.z += u.rotSpeed.z;
+      m.position.y = u.baseY + Math.sin(t * u.floatSpeed + u.floatPhase) * 0.6;
     });
 
-    // Grid group slow rotation
-    gridGroup.rotation.y += 0.0001;
+    // Particles drift
+    particles.rotation.y = t * 0.02;
 
-    // Camera parallax based on mouse
-    camera.position.x += (targetX * 0.5 - camera.position.x) * 0.02;
-    camera.position.y += (targetY * 0.5 - camera.position.y) * 0.02;
-
-    // Scroll parallax
-    camera.position.z = 5 + scrollY * 0.0005;
-
-    // Camera always looks at center
+    // Camera parallax + subtle scroll dolly
+    camera.position.x += (targetX * 1.2 - camera.position.x) * 0.03;
+    camera.position.y += (targetY * 1.2 - camera.position.y) * 0.03;
+    camera.position.z = 12 - scrollNorm * 2;
     camera.lookAt(0, 0, 0);
 
     renderer.render(scene, camera);
   }
-
   animate();
 
-  // ============================================
-  // Resize Handler
-  // ============================================
+  function ringGroupRotate(g, t) {
+    g.rotation.y = t * 0.1;
+  }
+
+  // ----------------------------------------------------------------
+  // Resize
+  // ----------------------------------------------------------------
   window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    updateScroll();
   }, { passive: true });
 
-  // ============================================
-  // Cleanup on page unload
-  // ============================================
+  // ----------------------------------------------------------------
+  // Cleanup
+  // ----------------------------------------------------------------
   window.addEventListener('beforeunload', () => {
     renderer.dispose();
-    knotGeometry.dispose();
-    knotMaterial.dispose();
-    coreGeometry.dispose();
-    coreMaterial.dispose();
-    particleGeometry.dispose();
-    particleMaterial.dispose();
-    gridHelper.geometry.dispose();
-    gridHelper.material.dispose();
-    cubes.forEach(cube => {
-      cube.geometry.dispose();
-      cube.material.dispose();
-    });
+    coreGeometry.dispose(); coreMaterial.dispose();
+    shellGeometry.dispose(); shellMaterial.dispose();
+    ringA.geometry.dispose(); ringA.material.dispose();
+    ringB.geometry.dispose(); ringB.material.dispose();
+    shapeGeometries.forEach(g => g.dispose());
+    ambientShapes.forEach(m => m.material.dispose());
+    particleGeometry.dispose(); particleMaterial.dispose();
   });
 }
