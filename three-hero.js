@@ -89,7 +89,14 @@ function initGlobalScene() {
     });
     // Additive blending vanishes on a light bg — switch to normal so particles show
     particleMaterial.blending = light ? THREE.NormalBlending : THREE.AdditiveBlending;
-    particleMaterial.opacity = light ? 0.6 : 0.6;
+    particleMaterial.opacity = light ? 0.55 : 0.6;
+    // 3D wordmark: neon cyan is unreadable on white — use deeper teal in day mode
+    if (heroTextMat) {
+      heroTextMat.color.set(light ? 0x0c7c8a : 0x00f0ff);
+      heroTextMat.emissive.set(light ? 0x07343a : 0x031b1f);
+      heroTextMat.emissiveIntensity = light ? 0.2 : 0.4;
+      heroTextMat.roughness = light ? 0.35 : 0.15;
+    }
   }
 
   const initialTheme =
@@ -186,6 +193,7 @@ function initGlobalScene() {
       heroText = new THREE.Mesh(heroTextGeo, heroTextMat);
       heroText.position.set(0, 0.2, 2.2); // in front of the crystal
       scene.add(heroText);
+      applySceneTheme(initialTheme); // colour the wordmark for the active theme
     },
     undefined,
     (err) => console.warn('3D font failed to load, skipping 3D text.', err)
