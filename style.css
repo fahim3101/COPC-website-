@@ -464,11 +464,25 @@ body {
   box-shadow: 0 10px 40px rgba(0, 240, 255, 0.08);
 }
 
-.glow-border {
+.glow-border,
+.benefit-card,
+.achievement-card,
+.testimonial-card,
+.path-card,
+.timeline-card,
+.faq-item,
+.newsletter-card {
   position: relative;
 }
 
-.glow-border::before {
+.glow-border::before,
+.benefit-card::before,
+.achievement-card::before,
+.testimonial-card::before,
+.path-card::before,
+.timeline-card::before,
+.faq-item::before,
+.newsletter-card::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -487,7 +501,14 @@ body {
   pointer-events: none;
 }
 
-.glow-border:hover::before {
+.glow-border:hover::before,
+.benefit-card:hover::before,
+.achievement-card:hover::before,
+.testimonial-card:hover::before,
+.path-card:hover::before,
+.timeline-card:hover::before,
+.faq-item:hover::before,
+.newsletter-card:hover::before {
   opacity: 1;
 }
 
@@ -979,6 +1000,10 @@ body {
 
 button:focus-visible,
 a:focus-visible,
+input:focus-visible,
+.faq-question:focus-visible,
+.path-link:focus-visible,
+.footer-links a:focus-visible,
 .nav-link:focus-visible,
 .cta-btn:focus-visible,
 .social-link:focus-visible,
@@ -1668,6 +1693,30 @@ a:focus-visible,
 @media (max-width: 480px) {
   .footer-grid { grid-template-columns: 1fr; }
 }
+
+/* ============================================================
+   POLISH: staggered reveal for new card grids
+   ============================================================ */
+.benefits-grid .reveal:nth-child(2),
+.achievements-grid .reveal:nth-child(2),
+.testimonials-grid .reveal:nth-child(2),
+.paths-grid .reveal:nth-child(2) { transition-delay: 0.08s; }
+.benefits-grid .reveal:nth-child(3),
+.achievements-grid .reveal:nth-child(3),
+.testimonials-grid .reveal:nth-child(3),
+.paths-grid .reveal:nth-child(3) { transition-delay: 0.16s; }
+.benefits-grid .reveal:nth-child(4),
+.achievements-grid .reveal:nth-child(4),
+.testimonials-grid .reveal:nth-child(4),
+.paths-grid .reveal:nth-child(4) { transition-delay: 0.24s; }
+.benefits-grid .reveal:nth-child(5),
+.achievements-grid .reveal:nth-child(5),
+.testimonials-grid .reveal:nth-child(5),
+.paths-grid .reveal:nth-child(5) { transition-delay: 0.32s; }
+.benefits-grid .reveal:nth-child(6),
+.achievements-grid .reveal:nth-child(6),
+.testimonials-grid .reveal:nth-child(6),
+.paths-grid .reveal:nth-child(6) { transition-delay: 0.40s; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
