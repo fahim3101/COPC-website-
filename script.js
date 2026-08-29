@@ -622,4 +622,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // ==========================================================================
+  // 11. DAY / NIGHT THEME TOGGLE
+  // ==========================================================================
+  const themeToggle = document.getElementById('theme-toggle');
+  const applyTheme = (theme) => {
+    document.documentElement.setAttribute('data-theme', theme);
+    if (themeToggle) {
+      const icon = themeToggle.querySelector('i');
+      if (icon) icon.className = theme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+    }
+    window.dispatchEvent(new CustomEvent('themechange', { detail: { theme } }));
+  };
+
+  const savedTheme = localStorage.getItem('copc-theme') || 'dark';
+  applyTheme(savedTheme);
+
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      localStorage.setItem('copc-theme', next);
+      applyTheme(next);
+    });
+  }
+
 });

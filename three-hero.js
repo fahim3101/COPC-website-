@@ -68,6 +68,40 @@ function initGlobalScene() {
   scene.add(rimLight);
 
   // ----------------------------------------------------------------
+  // Theme adaptation (day / night)
+  // ----------------------------------------------------------------
+  function applySceneTheme(theme) {
+    const light = theme === 'light';
+    scene.fog.color.set(light ? 0xf4f6fb : 0x0a0a0f);
+    // Dark navy crystal + slate shapes read clearly on a light background
+    coreMaterial.color.set(light ? 0x1b2740 : 0x0a0e1a);
+    coreMaterial.attenuationColor.set(light ? 0x0ea5b7 : 0x00f0ff);
+    coreMaterial.emissive.set(light ? 0x0a1a1f : 0x031b1f);
+    keyLight.intensity = light ? 42 : 60;
+    fillLight.intensity = light ? 32 : 45;
+    ambientShapes.forEach((m) => {
+      if (m.material.wireframe) {
+        m.material.color.set(light ? 0x0ea5b7 : 0x00f0ff);
+      } else if (m.material.isMeshPhysicalMaterial) {
+        m.material.color.set(light ? 0x2a3656 : 0x0a0e1a);
+        m.material.attenuationColor.set(light ? 0x0ea5b7 : 0x00f0ff);
+      }
+    });
+    // Additive blending vanishes on a light bg — switch to normal so particles show
+    particleMaterial.blending = light ? THREE.NormalBlending : THREE.AdditiveBlending;
+    particleMaterial.opacity = light ? 0.6 : 0.6;
+  }
+
+  const initialTheme =
+    (typeof localStorage !== 'undefined' && localStorage.getItem('copc-theme')) ||
+    document.documentElement.getAttribute('data-theme') ||
+    'dark';
+
+  window.addEventListener('themechange', (e) => {
+    if (e.detail && e.detail.theme) applySceneTheme(e.detail.theme);
+  });
+
+  // ----------------------------------------------------------------
   // Hero focal crystal (prominent at top, fades as you scroll)
   // ----------------------------------------------------------------
   const heroGroup = new THREE.Group();
@@ -247,6 +281,9 @@ function initGlobalScene() {
   });
   const particles = new THREE.Points(particleGeometry, particleMaterial);
   scene.add(particles);
+
+  // Apply the saved theme now that all materials exist
+  applySceneTheme(initialTheme);
 
   // ----------------------------------------------------------------
   // Interaction — pointer parallax + scroll travel
