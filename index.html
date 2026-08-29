@@ -8,12 +8,21 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="icon" href="https://bup.edu.bd/public/images/logo/favicon.ico">
+    <!-- Three.js for 3D graphics -->
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+    </script>
 </head>
 <body>
 
     <div id="cursor-glow"></div>
 
-    <div id="lightbox"><button class="lightbox-close">&times;</button><img src="" alt="Gallery Image"></div>
+    <div id="lightbox" role="dialog" aria-modal="true" aria-label="Image gallery"><button class="lightbox-close" aria-label="Close">&times;</button><img src="" alt="Gallery Image"></div>
 
     <nav id="navbar">
       <a href="#hero" class="nav-logo">{ CoPC }</a>
@@ -41,6 +50,7 @@
     <section id="hero">
       <canvas id="matrix-canvas"></canvas>
       <canvas id="particles-canvas"></canvas>
+      <div id="three-container"></div>
       <div class="hero-content">
         <div class="hero-badge">&lt; Department of CSE, BUP /&gt;</div>
         <h1 class="hero-title">BUP Computer<br><span class="gradient-text">Programming Club</span></h1>
@@ -113,7 +123,7 @@
         <!-- Event 1: Tech Carnival -->
         <div class="glass-card event-card tilt-card glow-border reveal reveal-up">
           <div class="event-image-wrapper">
-            <img class="event-image" src="https://bup.edu.bd/public/upload/news/20250930_1759207764.jpg" alt="BUP CSE Tech Carnival 2025" loading="lazy">
+            <img class="event-image" src="https://bup.edu.bd/public/upload/news/20250930_1759207764.jpg" alt="BUP CSE Tech Carnival 2025" loading="lazy" onerror="this.remove()">
           </div>
           <div class="event-content">
             <div class="event-date">📅 Sep 24-25, 2025</div>
@@ -130,7 +140,7 @@
         <!-- Event 2: Higher Studies -->
         <div class="glass-card event-card tilt-card glow-border reveal reveal-up">
           <div class="event-image-wrapper">
-            <img class="event-image" src="https://bup.edu.bd/public/upload/news/20250602_1748851316.jpg" alt="Higher Studies Lecture" loading="lazy">
+            <img class="event-image" src="https://bup.edu.bd/public/upload/news/20250602_1748851316.jpg" alt="Higher Studies Lecture" loading="lazy" onerror="this.remove()">
           </div>
           <div class="event-content">
             <div class="event-date">📅 May 22, 2025</div>
@@ -146,7 +156,7 @@
         <!-- Event 3: GP Collaboration -->
         <div class="glass-card event-card tilt-card glow-border reveal reveal-up">
           <div class="event-image-wrapper">
-            <img class="event-image" src="https://bup.edu.bd/public/upload/news/20260616_1781594132.jpeg" alt="BUP Grameenphone Collaboration" loading="lazy">
+            <img class="event-image" src="https://bup.edu.bd/public/upload/news/20260616_1781594132.jpeg" alt="BUP Grameenphone Collaboration" loading="lazy" onerror="this.remove()">
           </div>
           <div class="event-content">
             <div class="event-date">📅 Jun 14, 2026</div>
@@ -238,27 +248,27 @@
       </div>
       <div class="gallery-grid">
         <div class="gallery-item reveal reveal-up">
-          <img src="https://bup.edu.bd/public/upload/slider/20230210_1676004771794.jpg" alt="BUP Campus" loading="lazy">
+          <img src="https://bup.edu.bd/public/upload/slider/20230210_1676004771794.jpg" alt="BUP Campus" loading="lazy" onerror="this.remove()">
           <div class="gallery-overlay"><p>BUP Campus</p></div>
         </div>
         <div class="gallery-item reveal reveal-up">
-          <img src="https://bup.edu.bd/public/upload/news/20250930_1759207764.jpg" alt="Tech Carnival 2025" loading="lazy">
+          <img src="https://bup.edu.bd/public/upload/news/20250930_1759207764.jpg" alt="Tech Carnival 2025" loading="lazy" onerror="this.remove()">
           <div class="gallery-overlay"><p>Tech Carnival 2025</p></div>
         </div>
         <div class="gallery-item reveal reveal-up">
-          <img src="https://bup.edu.bd/public/upload/slider/20250423_1745389393848.JPG" alt="Club Activities" loading="lazy">
+          <img src="https://bup.edu.bd/public/upload/slider/20250423_1745389393848.JPG" alt="Club Activities" loading="lazy" onerror="this.remove()">
           <div class="gallery-overlay"><p>Club Activities</p></div>
         </div>
         <div class="gallery-item reveal reveal-up">
-          <img src="https://bup.edu.bd/public/upload/news/20250602_1748851316.jpg" alt="Higher Studies Seminar" loading="lazy">
+          <img src="https://bup.edu.bd/public/upload/news/20250602_1748851316.jpg" alt="Higher Studies Seminar" loading="lazy" onerror="this.remove()">
           <div class="gallery-overlay"><p>Higher Studies Seminar</p></div>
         </div>
         <div class="gallery-item reveal reveal-up">
-          <img src="https://bup.edu.bd/public/upload/news/20260616_1781594132.jpeg" alt="GP Collaboration" loading="lazy">
+          <img src="https://bup.edu.bd/public/upload/news/20260616_1781594132.jpeg" alt="GP Collaboration" loading="lazy" onerror="this.remove()">
           <div class="gallery-overlay"><p>GP Collaboration</p></div>
         </div>
         <div class="gallery-item reveal reveal-up">
-          <img src="https://bup.edu.bd/public/upload/banner/20230313_1678702875.png" alt="BUP CSE Department" loading="lazy">
+          <img src="https://bup.edu.bd/public/upload/banner/20230313_1678702875.png" alt="BUP CSE Department" loading="lazy" onerror="this.remove()">
           <div class="gallery-overlay"><p>BUP CSE Department</p></div>
         </div>
       </div>
@@ -323,5 +333,6 @@
     </footer>
 
     <script src="script.js"></script>
+    <script type="module" src="three-hero.js"></script>
 </body>
 </html>

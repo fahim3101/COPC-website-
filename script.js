@@ -40,6 +40,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================================================
   // 2. MATRIX RAIN EFFECT
   // ==========================================================================
+  let heroVisible = true;
+  const hero = document.getElementById('hero');
+  if (hero && 'IntersectionObserver' in window) {
+    new IntersectionObserver((entries) => {
+      heroVisible = entries[0].isIntersecting;
+    }, { threshold: 0 }).observe(hero);
+  }
+
   const matrixCanvas = document.getElementById('matrix-canvas');
   if (matrixCanvas && !prefersReducedMotion) {
     const ctx = matrixCanvas.getContext('2d');
@@ -48,7 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const chars = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレゲゼデベペオォコソトノホモヨョロゴゾドボポヴッン0123456789{}<>/=;:()[]#@&*+-'.split('');
     
     const fontSize = 14;
-    let columns = [];
     let drops = [];
 
     const initMatrix = () => {
@@ -67,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', initMatrix, { passive: true });
 
     const drawMatrix = () => {
+      if (document.hidden || !heroVisible) return;
       ctx.fillStyle = 'rgba(10, 10, 15, 0.05)'; // trail effect
       ctx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
 
@@ -130,6 +138,10 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', initParticles, { passive: true });
 
     const animateParticles = () => {
+      if (document.hidden || !heroVisible) {
+        requestAnimationFrame(animateParticles);
+        return;
+      }
       pCtx.clearRect(0, 0, particlesCanvas.width, particlesCanvas.height);
       
       // Update and draw particles
@@ -141,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const dy = p.y - mouseY;
         const distanceToMouse = Math.sqrt(dx * dx + dy * dy);
         
-        if (distanceToMouse < 150) {
+        if (distanceToMouse > 0.01 && distanceToMouse < 150) {
           // Push away gently
           const forceDirectionX = dx / distanceToMouse;
           const forceDirectionY = dy / distanceToMouse;
@@ -260,7 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================================================
   // 6. NAVIGATION
   // ==========================================================================
-  const navbar = document.querySelector('.navbar'); // Assuming class .navbar
+  const navbar = document.getElementById('navbar');
   const navLinks = document.querySelectorAll('.nav-link');
   const sections = Array.from(navLinks).map(link => {
     const id = link.getAttribute('href');
@@ -447,31 +459,71 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================================================
   const galleryItems = document.querySelectorAll('.gallery-item');
   const lightbox = document.getElementById('lightbox');
-  
+
   if (galleryItems.length > 0 && lightbox) {
     const lightboxImg = lightbox.querySelector('img');
     const lightboxClose = lightbox.querySelector('.lightbox-close');
-    
+    let lastFocusedElement = null;
+
+    const openLightbox = (img) => {
+      if (img && lightboxImg) {
+        lightboxImg.src = img.src;
+        lightbox.classList.add('active');
+        lastFocusedElement = document.activeElement;
+        lightboxClose?.focus();
+        // Trap focus
+        document.addEventListener('keydown', trapFocus);
+      }
+    };
+
     const closeLightbox = () => {
       lightbox.classList.remove('active');
+      document.removeEventListener('keydown', trapFocus);
+      lastFocusedElement?.focus();
+    };
+
+    const trapFocus = (e) => {
+      if (e.key === 'Tab') {
+        const focusableElements = lightbox.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (e.shiftKey && document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement.focus();
+        } else if (!e.shiftKey && document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement.focus();
+        }
+      }
     };
 
     galleryItems.forEach(item => {
+      // Make keyboard accessible
+      item.setAttribute('tabindex', '0');
+      item.setAttribute('role', 'button');
+      item.setAttribute('aria-label', item.querySelector('img')?.alt || 'View gallery image');
+
       item.addEventListener('click', () => {
         const img = item.querySelector('img');
-        if (img && lightboxImg) {
-          lightboxImg.src = img.src;
-          lightbox.classList.add('active');
+        openLightbox(img);
+      });
+
+      item.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          const img = item.querySelector('img');
+          openLightbox(img);
         }
       });
     });
-    
+
     lightbox.addEventListener('click', (e) => {
       if (e.target === lightbox || (lightboxClose && e.target === lightboxClose) || (lightboxClose && lightboxClose.contains(e.target))) {
         closeLightbox();
       }
     });
-    
+
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && lightbox.classList.contains('active')) {
         closeLightbox();
