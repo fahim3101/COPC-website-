@@ -83,24 +83,25 @@ function initGlobalScene() {
   const ringB = makeRing(3.45, 0.011, 0x7c3aed, { x: Math.PI / 2.95, y: 0.48, z: 0 });
   heroGroup.add(ringA, ringB);
 
-  // Extruded wordmark
+  // Extruded wordmark — subtle watermark behind the CSS title (clean, not competing)
   let heroText = null; let heroTextMat = null; let heroTextGeo = null;
   const fontLoader = new FontLoader();
   fontLoader.load(
     'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/fonts/helvetiker_bold.typeface.json',
     (font) => {
       heroTextGeo = new TextGeometry('CoPC', {
-        font, size: 2.35, height: 0.62, curveSegments: 12,
-        bevelEnabled: true, bevelThickness: 0.07, bevelSize: 0.045, bevelOffset: 0, bevelSegments: 4
+        font, size: 1.15, height: 0.22, curveSegments: 10,
+        bevelEnabled: true, bevelThickness: 0.03, bevelSize: 0.02, bevelOffset: 0, bevelSegments: 3
       });
       heroTextGeo.center();
       heroTextMat = new THREE.MeshPhysicalMaterial({
-        color: 0x00e5ff, metalness: 0.88, roughness: 0.14,
-        iridescence: 1, iridescenceIOR: 1.28, clearcoat: 1, clearcoatRoughness: 0.1,
-        emissive: 0x031b1f, emissiveIntensity: 0.38
+        color: 0x00e5ff, metalness: 0.78, roughness: 0.18,
+        iridescence: 0.6, iridescenceIOR: 1.22, clearcoat: 0.6, clearcoatRoughness: 0.18,
+        emissive: 0x031b1f, emissiveIntensity: 0.22, transparent: true, opacity: 0.42
       });
       heroText = new THREE.Mesh(heroTextGeo, heroTextMat);
-      heroText.position.set(0, 0.18, 2.35);
+      heroText.position.set(0, -1.35, -0.90); // below title, near the CTA — not covering headline
+      heroText.scale.setScalar(0.78);
       scene.add(heroText);
       applySceneTheme(document.documentElement.getAttribute('data-theme') || initialTheme);
     },
@@ -119,18 +120,18 @@ function initGlobalScene() {
     new THREE.TorusGeometry(0.40, 0.135, 12, 24)
   ];
   const ambientShapes = [];
-  const shapeCount = window.innerWidth < 768 ? 18 : 32;
+  const shapeCount = window.innerWidth < 768 ? 12 : 20;
   for (let i = 0; i < shapeCount; i++) {
     const geo = shapeGeometries[i % shapeGeometries.length];
-    const isWire = Math.random() > 0.56;
+    const isWire = Math.random() > 0.42; // more wire, fewer solid blobs
     const mat = isWire
       ? new THREE.MeshBasicMaterial({
-          color: new THREE.Color().setHSL(0.54 + Math.random() * 0.18, 0.88, 0.62),
-          wireframe: true, transparent: true, opacity: 0.16, depthWrite: false
+          color: new THREE.Color().setHSL(0.54 + Math.random() * 0.16, 0.85, 0.60),
+          wireframe: true, transparent: true, opacity: 0.11, depthWrite: false
         })
       : new THREE.MeshPhysicalMaterial({
-          color: 0x0b1020, metalness: 0.18, roughness: 0.12, transmission: 0.62,
-          transparent: true, opacity: 0.46, clearcoat: 1, clearcoatRoughness: 0.14
+          color: 0x0b1020, metalness: 0.12, roughness: 0.18, transmission: 0.78,
+          transparent: true, opacity: 0.30, clearcoat: 0.8, clearcoatRoughness: 0.22
         });
     const mesh = new THREE.Mesh(geo, mat);
     // Distribute in depth layers for parallax illusion
@@ -138,13 +139,19 @@ function initGlobalScene() {
     const z = -3.5 - layer * 5.5 - Math.random() * 4.5;
     const spreadX = 13 + layer * 4;
     const spreadY = 22 + layer * 6;
-    mesh.position.set(
-      (Math.random() - 0.5) * spreadX * 2,
-      (Math.random() - 0.5) * spreadY,
-      z
-    );
-    const s = 0.55 + Math.random() * 1.15 - layer * 0.08;
-    mesh.scale.setScalar(Math.max(0.35, s));
+    let px = (Math.random() - 0.5) * spreadX * 2;
+    let py = (Math.random() - 0.5) * spreadY;
+    // keep hero title area (center) clear — pushes shapes outward if too close
+    const distCenter = Math.hypot(px, py - 0.6);
+    if (distCenter < 3.8) {
+      const angle = Math.atan2(py - 0.6, px) || Math.random()*Math.PI*2;
+      const push = 3.8 + Math.random()*2.2;
+      px = Math.cos(angle) * push;
+      py = 0.6 + Math.sin(angle) * push;
+    }
+    mesh.position.set(px, py, z);
+    const s = 0.42 + Math.random() * 0.62 - layer * 0.06;
+    mesh.scale.setScalar(Math.max(0.28, s));
     mesh.userData = {
       rotSpeed: new THREE.Vector3((Math.random() - 0.5) * 0.008, (Math.random() - 0.5) * 0.008, (Math.random() - 0.5) * 0.007),
       floatPhase: Math.random() * Math.PI * 2,
@@ -188,31 +195,38 @@ function initGlobalScene() {
     scene.fog.color.set(light ? 0xfbfcfe : 0x06080f);
     scene.fog.near = 0; scene.fog.far = 0;
     scene.fog = new THREE.FogExp2(light ? 0xfbfcfe : 0x06080f, light ? 0.017 : 0.028);
-    coreMaterial.color.set(light ? 0x1e293b : 0x0a0e1a);
+    coreMaterial.color.set(light ? 0xf8fafc : 0x0a0e1a);
     coreMaterial.attenuationColor.set(light ? 0x0e7490 : 0x00e5ff);
-    coreMaterial.emissive.set(light ? 0x0d2329 : 0x031b1f);
-    keyLight.intensity = light ? 34 : 62;
-    fillLight.intensity = light ? 24 : 46;
+    coreMaterial.emissive.set(light ? 0xffffff : 0x031b1f);
+    coreMaterial.roughness = light ? 0.22 : 0.06;
+    coreMaterial.metalness = light ? 0.02 : 0.08;
+    keyLight.intensity = light ? 22 : 62;
+    fillLight.intensity = light ? 16 : 46;
     keyLight.color.set(light ? 0x0e7490 : 0x00e5ff);
     fillLight.color.set(light ? 0x6d28d9 : 0x7c3aed);
     ambientShapes.forEach((m) => {
-      if (m.material.wireframe) m.material.color.set(light ? 0x0e7490 : 0x00e5ff);
-      else if (m.material.isMeshPhysicalMaterial) {
-        m.material.color.set(light ? 0x334155 : 0x0b1020);
+      if (m.material.wireframe) {
+        m.material.color.set(light ? 0x0e7490 : 0x00e5ff);
+        m.material.opacity = light ? 0.055 : 0.11;
+      } else if (m.material.isMeshPhysicalMaterial) {
+        m.material.color.set(light ? 0xf8fafc : 0x0b1020);
+        m.material.opacity = light ? 0.14 : 0.30;
         m.material.attenuationColor?.set?.(light ? 0x0e7490 : 0x00e5ff);
       }
     });
     particleMaterial.blending = light ? THREE.NormalBlending : THREE.AdditiveBlending;
-    particleMaterial.opacity = light ? 0.38 : 0.58;
+    particleMaterial.opacity = light ? 0.28 : 0.58;
     shellMaterial.color.set(light ? 0x0e7490 : 0x00e5ff);
-    shellMaterial.opacity = light ? 0.055 : 0.10;
+    shellMaterial.opacity = light ? 0.040 : 0.10;
     ringA.material.color.set(light ? 0x0e7490 : 0x00e5ff);
     ringB.material.color.set(light ? 0x6d28d9 : 0x7c3aed);
     if (heroTextMat) {
       heroTextMat.color.set(light ? 0x0e7490 : 0x00e5ff);
       heroTextMat.emissive.set(light ? 0x07343a : 0x031b1f);
-      heroTextMat.emissiveIntensity = light ? 0.14 : 0.38;
-      heroTextMat.roughness = light ? 0.30 : 0.14;
+      heroTextMat.emissiveIntensity = light ? 0.08 : 0.22;
+      heroTextMat.roughness = light ? 0.42 : 0.18;
+      heroTextMat.opacity = light ? 0.09 : 0.32;
+      heroTextMat.transparent = true;
     }
   }
   applySceneTheme(initialTheme);
