@@ -66,9 +66,9 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', initMatrix, { passive: true });
     const drawMatrix = () => {
       if (document.hidden || !heroVisible) return;
-      ctx.fillStyle = document.documentElement.getAttribute('data-theme') === 'light' ? 'rgba(246,247,251,0.08)' : 'rgba(6,8,15,0.09)';
+      ctx.fillStyle = document.documentElement.getAttribute('data-theme') === 'light' ? 'rgba(251,252,254,0.10)' : 'rgba(6,8,15,0.09)';
       ctx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
-      ctx.fillStyle = document.documentElement.getAttribute('data-theme') === 'light' ? '#0891b2' : '#00e5ff';
+      ctx.fillStyle = document.documentElement.getAttribute('data-theme') === 'light' ? '#0e7490' : '#00e5ff';
       ctx.font = fontSize + 'px "JetBrains Mono", monospace';
       for (let i = 0; i < drops.length; i++) {
         const text = chars[Math.floor(Math.random() * chars.length)];
@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (distance < 110) {
             pCtx.beginPath();
             const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-            pCtx.strokeStyle = isLight ? `rgba(8,145,178,${(1 - distance / 110) * 0.18})` : `rgba(0,229,255,${(1 - distance / 110) * 0.28})`;
+            pCtx.strokeStyle = isLight ? `rgba(14,116,144,${(1 - distance / 110) * 0.14})` : `rgba(0,229,255,${(1 - distance / 110) * 0.28})`;
             pCtx.lineWidth = 0.6;
             pCtx.moveTo(particles[i].x, particles[i].y);
             pCtx.lineTo(particles[j].x, particles[j].y);
@@ -455,7 +455,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const themeToggle = document.getElementById('theme-toggle');
   const applyTheme = (theme) => {
     document.documentElement.setAttribute('data-theme', theme);
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'light' ? '#f6f7fb' : '#06080f');
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'light' ? '#fbfcfe' : '#06080f');
     if (themeToggle) {
       const icon = themeToggle.querySelector('i');
       if (icon) icon.className = theme === 'light' ? 'fas fa-sun' : 'fas fa-moon';

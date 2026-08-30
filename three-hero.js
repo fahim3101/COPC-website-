@@ -185,35 +185,34 @@ function initGlobalScene() {
   const initialTheme = (typeof localStorage !== 'undefined' && localStorage.getItem('copc-theme')) || document.documentElement.getAttribute('data-theme') || 'dark';
   function applySceneTheme(theme) {
     const light = theme === 'light';
-    scene.fog.color.set(light ? 0xf6f7fb : 0x06080f);
+    scene.fog.color.set(light ? 0xfbfcfe : 0x06080f);
     scene.fog.near = 0; scene.fog.far = 0;
-    // Recreate fog with correct density
-    scene.fog = new THREE.FogExp2(light ? 0xf6f7fb : 0x06080f, light ? 0.019 : 0.028);
-    coreMaterial.color.set(light ? 0x15203a : 0x0a0e1a);
-    coreMaterial.attenuationColor.set(light ? 0x0891b2 : 0x00e5ff);
+    scene.fog = new THREE.FogExp2(light ? 0xfbfcfe : 0x06080f, light ? 0.017 : 0.028);
+    coreMaterial.color.set(light ? 0x1e293b : 0x0a0e1a);
+    coreMaterial.attenuationColor.set(light ? 0x0e7490 : 0x00e5ff);
     coreMaterial.emissive.set(light ? 0x0d2329 : 0x031b1f);
-    keyLight.intensity = light ? 38 : 62;
-    fillLight.intensity = light ? 28 : 46;
-    keyLight.color.set(light ? 0x0891b2 : 0x00e5ff);
+    keyLight.intensity = light ? 34 : 62;
+    fillLight.intensity = light ? 24 : 46;
+    keyLight.color.set(light ? 0x0e7490 : 0x00e5ff);
     fillLight.color.set(light ? 0x6d28d9 : 0x7c3aed);
     ambientShapes.forEach((m) => {
-      if (m.material.wireframe) m.material.color.set(light ? 0x0891b2 : 0x00e5ff);
+      if (m.material.wireframe) m.material.color.set(light ? 0x0e7490 : 0x00e5ff);
       else if (m.material.isMeshPhysicalMaterial) {
-        m.material.color.set(light ? 0x2a3656 : 0x0b1020);
-        m.material.attenuationColor?.set?.(light ? 0x0891b2 : 0x00e5ff);
+        m.material.color.set(light ? 0x334155 : 0x0b1020);
+        m.material.attenuationColor?.set?.(light ? 0x0e7490 : 0x00e5ff);
       }
     });
     particleMaterial.blending = light ? THREE.NormalBlending : THREE.AdditiveBlending;
-    particleMaterial.opacity = light ? 0.42 : 0.58;
-    shellMaterial.color.set(light ? 0x0891b2 : 0x00e5ff);
-    shellMaterial.opacity = light ? 0.07 : 0.10;
-    ringA.material.color.set(light ? 0x0891b2 : 0x00e5ff);
+    particleMaterial.opacity = light ? 0.38 : 0.58;
+    shellMaterial.color.set(light ? 0x0e7490 : 0x00e5ff);
+    shellMaterial.opacity = light ? 0.055 : 0.10;
+    ringA.material.color.set(light ? 0x0e7490 : 0x00e5ff);
     ringB.material.color.set(light ? 0x6d28d9 : 0x7c3aed);
     if (heroTextMat) {
-      heroTextMat.color.set(light ? 0x0e7c8a : 0x00e5ff);
+      heroTextMat.color.set(light ? 0x0e7490 : 0x00e5ff);
       heroTextMat.emissive.set(light ? 0x07343a : 0x031b1f);
-      heroTextMat.emissiveIntensity = light ? 0.18 : 0.38;
-      heroTextMat.roughness = light ? 0.32 : 0.14;
+      heroTextMat.emissiveIntensity = light ? 0.14 : 0.38;
+      heroTextMat.roughness = light ? 0.30 : 0.14;
     }
   }
   applySceneTheme(initialTheme);
