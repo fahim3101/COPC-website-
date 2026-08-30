@@ -1,8 +1,5 @@
-// Global 3D background scene for the entire CoPC site (navbar -> footer)
-// Renders a fixed, full-viewport WebGL canvas behind all content, giving the
-// whole page consistent depth: a hero "crystal" focal object, real extruded
-// 3D text, plus an ambient field of drifting shapes and particles that react
-// to scroll & pointer.
+// Premium clean global 3D backdrop — CoPC
+// Fixed WebGL canvas behind all content: hero crystal + soft ambient field
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
@@ -15,296 +12,218 @@ function initGlobalScene() {
   const canvas = document.getElementById('bg-3d');
   if (!canvas) return;
 
-  // ----------------------------------------------------------------
-  // Renderer (uses the existing fixed canvas)
-  // ----------------------------------------------------------------
   let renderer;
   try {
-    renderer = new THREE.WebGLRenderer({
-      canvas,
-      alpha: true,
-      antialias: true,
-      powerPreference: 'high-performance'
-    });
+    renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance' });
   } catch (err) {
     console.warn('WebGL not supported, skipping 3D background.', err);
     return;
   }
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.9));
   renderer.setClearColor(0x000000, 0);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.1;
+  renderer.toneMappingExposure = 1.08;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
 
-  // ----------------------------------------------------------------
-  // Scene & Camera
-  // ----------------------------------------------------------------
   const scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x0a0a0f, 0.035);
+  scene.fog = new THREE.FogExp2(0x06080f, 0.028);
 
-  const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 200);
-  camera.position.set(0, 0, 12);
+  const camera = new THREE.PerspectiveCamera(52, window.innerWidth / window.innerHeight, 0.1, 200);
+  camera.position.set(0, 0.35, 11.5);
 
-  // Soft reflections for the glassy materials
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
   pmrem.dispose();
 
-  // ----------------------------------------------------------------
-  // Lighting — clean two-tone cyan / violet
-  // ----------------------------------------------------------------
-  scene.add(new THREE.AmbientLight(0xffffff, 0.45));
-
-  const keyLight = new THREE.PointLight(0x00f0ff, 60, 80);
-  keyLight.position.set(6, 6, 10);
+  // Lights — soft two-tone
+  scene.add(new THREE.AmbientLight(0xffffff, 0.42));
+  const keyLight = new THREE.PointLight(0x00e5ff, 62, 90);
+  keyLight.position.set(7, 6.5, 10);
   scene.add(keyLight);
-
-  const fillLight = new THREE.PointLight(0x8b5cf6, 45, 80);
-  fillLight.position.set(-8, -4, 6);
+  const fillLight = new THREE.PointLight(0x7c3aed, 46, 90);
+  fillLight.position.set(-8.5, -4.2, 6.5);
   scene.add(fillLight);
-
-  const rimLight = new THREE.DirectionalLight(0xffffff, 1.0);
-  rimLight.position.set(0, 3, -8);
+  const rimLight = new THREE.DirectionalLight(0xffffff, 0.95);
+  rimLight.position.set(0, 4, -9);
   scene.add(rimLight);
 
-  // ----------------------------------------------------------------
-  // Theme adaptation (day / night)
-  // ----------------------------------------------------------------
-  function applySceneTheme(theme) {
-    const light = theme === 'light';
-    scene.fog.color.set(light ? 0xf4f6fb : 0x0a0a0f);
-    // Dark navy crystal + slate shapes read clearly on a light background
-    coreMaterial.color.set(light ? 0x1b2740 : 0x0a0e1a);
-    coreMaterial.attenuationColor.set(light ? 0x0ea5b7 : 0x00f0ff);
-    coreMaterial.emissive.set(light ? 0x0a1a1f : 0x031b1f);
-    keyLight.intensity = light ? 42 : 60;
-    fillLight.intensity = light ? 32 : 45;
-    ambientShapes.forEach((m) => {
-      if (m.material.wireframe) {
-        m.material.color.set(light ? 0x0ea5b7 : 0x00f0ff);
-      } else if (m.material.isMeshPhysicalMaterial) {
-        m.material.color.set(light ? 0x2a3656 : 0x0a0e1a);
-        m.material.attenuationColor.set(light ? 0x0ea5b7 : 0x00f0ff);
-      }
-    });
-    // Additive blending vanishes on a light bg — switch to normal so particles show
-    particleMaterial.blending = light ? THREE.NormalBlending : THREE.AdditiveBlending;
-    particleMaterial.opacity = light ? 0.55 : 0.6;
-    // 3D wordmark: neon cyan is unreadable on white — use deeper teal in day mode
-    if (heroTextMat) {
-      heroTextMat.color.set(light ? 0x0c7c8a : 0x00f0ff);
-      heroTextMat.emissive.set(light ? 0x07343a : 0x031b1f);
-      heroTextMat.emissiveIntensity = light ? 0.2 : 0.4;
-      heroTextMat.roughness = light ? 0.35 : 0.15;
-    }
-  }
-
-  const initialTheme =
-    (typeof localStorage !== 'undefined' && localStorage.getItem('copc-theme')) ||
-    document.documentElement.getAttribute('data-theme') ||
-    'dark';
-
-  window.addEventListener('themechange', (e) => {
-    if (e.detail && e.detail.theme) applySceneTheme(e.detail.theme);
-  });
-
-  // ----------------------------------------------------------------
-  // Hero focal crystal (prominent at top, fades as you scroll)
-  // ----------------------------------------------------------------
+  // Hero crystal group — hero focal
   const heroGroup = new THREE.Group();
+  heroGroup.position.set(0, 0.6, 0);
   scene.add(heroGroup);
 
-  const coreGeometry = new THREE.IcosahedronGeometry(1.6, 0);
+  const coreGeometry = new THREE.IcosahedronGeometry(1.55, 0);
   const coreMaterial = new THREE.MeshPhysicalMaterial({
-    color: 0x0a0e1a,
-    metalness: 0.1,
-    roughness: 0.05,
-    transmission: 0.9,
-    thickness: 1.8,
-    ior: 1.6,
-    iridescence: 1,
-    iridescenceIOR: 1.3,
-    iridescenceThicknessRange: [100, 600],
-    clearcoat: 1,
-    clearcoatRoughness: 0.1,
-    attenuationColor: 0x00f0ff,
-    attenuationDistance: 3,
-    transparent: true,
-    opacity: 1
+    color: 0x0a0e1a, metalness: 0.08, roughness: 0.06,
+    transmission: 0.92, thickness: 1.9, ior: 1.62,
+    iridescence: 1, iridescenceIOR: 1.32, iridescenceThicknessRange: [120, 620],
+    clearcoat: 1, clearcoatRoughness: 0.08,
+    attenuationColor: 0x00e5ff, attenuationDistance: 3.2,
+    transparent: true, opacity: 1
   });
   const core = new THREE.Mesh(coreGeometry, coreMaterial);
   heroGroup.add(core);
 
-  const shellGeometry = new THREE.IcosahedronGeometry(2.5, 1);
+  const shellGeometry = new THREE.IcosahedronGeometry(2.42, 1);
   const shellMaterial = new THREE.MeshBasicMaterial({
-    color: 0x00f0ff,
-    wireframe: true,
-    transparent: true,
-    opacity: 0.12,
-    depthWrite: false
+    color: 0x00e5ff, wireframe: true, transparent: true, opacity: 0.10, depthWrite: false
   });
   const shell = new THREE.Mesh(shellGeometry, shellMaterial);
   heroGroup.add(shell);
 
-  function makeRing(radius, tube, color, tilt) {
-    const geo = new THREE.TorusGeometry(radius, tube, 16, 140);
-    const mat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.4, depthWrite: false });
+  const makeRing = (radius, tube, color, tilt) => {
+    const geo = new THREE.TorusGeometry(radius, tube, 16, 160);
+    const mat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.38, depthWrite: false });
     const ring = new THREE.Mesh(geo, mat);
     ring.rotation.set(tilt.x, tilt.y, tilt.z);
     return ring;
-  }
-  const ringA = makeRing(3.1, 0.012, 0x00f0ff, { x: Math.PI / 2.4, y: 0, z: 0.3 });
-  const ringB = makeRing(3.5, 0.012, 0x8b5cf6, { x: Math.PI / 3, y: 0.5, z: 0 });
+  };
+  const ringA = makeRing(3.05, 0.011, 0x00e5ff, { x: Math.PI / 2.35, y: 0, z: 0.22 });
+  const ringB = makeRing(3.45, 0.011, 0x7c3aed, { x: Math.PI / 2.95, y: 0.48, z: 0 });
   heroGroup.add(ringA, ringB);
 
-  // ----------------------------------------------------------------
-  // Real extruded 3D text — the hero wordmark, rendered in WebGL
-  // ----------------------------------------------------------------
-  let heroText = null;
-  let heroTextMat = null;
-  let heroTextGeo = null;
+  // Extruded wordmark
+  let heroText = null; let heroTextMat = null; let heroTextGeo = null;
   const fontLoader = new FontLoader();
   fontLoader.load(
     'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/fonts/helvetiker_bold.typeface.json',
     (font) => {
       heroTextGeo = new TextGeometry('CoPC', {
-        font,
-        size: 2.4,
-        height: 0.7,
-        curveSegments: 14,
-        bevelEnabled: true,
-        bevelThickness: 0.08,
-        bevelSize: 0.05,
-        bevelOffset: 0,
-        bevelSegments: 5
+        font, size: 2.35, height: 0.62, curveSegments: 12,
+        bevelEnabled: true, bevelThickness: 0.07, bevelSize: 0.045, bevelOffset: 0, bevelSegments: 4
       });
       heroTextGeo.center();
       heroTextMat = new THREE.MeshPhysicalMaterial({
-        color: 0x00f0ff,
-        metalness: 0.9,
-        roughness: 0.15,
-        iridescence: 1,
-        iridescenceIOR: 1.3,
-        clearcoat: 1,
-        clearcoatRoughness: 0.1,
-        emissive: 0x031b1f,
-        emissiveIntensity: 0.4
+        color: 0x00e5ff, metalness: 0.88, roughness: 0.14,
+        iridescence: 1, iridescenceIOR: 1.28, clearcoat: 1, clearcoatRoughness: 0.1,
+        emissive: 0x031b1f, emissiveIntensity: 0.38
       });
       heroText = new THREE.Mesh(heroTextGeo, heroTextMat);
-      heroText.position.set(0, 0.2, 2.2); // in front of the crystal
+      heroText.position.set(0, 0.18, 2.35);
       scene.add(heroText);
-      applySceneTheme(initialTheme); // colour the wordmark for the active theme
+      applySceneTheme(document.documentElement.getAttribute('data-theme') || initialTheme);
     },
     undefined,
     (err) => console.warn('3D font failed to load, skipping 3D text.', err)
   );
 
-  // ----------------------------------------------------------------
-  // Ambient drifting shapes — fills the whole page with quiet 3D depth
-  // ----------------------------------------------------------------
+  // Ambient shapes — quiet depth, layered in Z for parallax
   const ambientGroup = new THREE.Group();
   scene.add(ambientGroup);
 
   const shapeGeometries = [
-    new THREE.IcosahedronGeometry(0.5, 0),
-    new THREE.OctahedronGeometry(0.5, 0),
-    new THREE.TetrahedronGeometry(0.6, 0),
-    new THREE.TorusGeometry(0.4, 0.14, 12, 24)
+    new THREE.IcosahedronGeometry(0.52, 0),
+    new THREE.OctahedronGeometry(0.52, 0),
+    new THREE.TetrahedronGeometry(0.62, 0),
+    new THREE.TorusGeometry(0.40, 0.135, 12, 24)
   ];
-
   const ambientShapes = [];
-  const shapeCount = 42;
+  const shapeCount = window.innerWidth < 768 ? 18 : 32;
   for (let i = 0; i < shapeCount; i++) {
     const geo = shapeGeometries[i % shapeGeometries.length];
-    const isWire = Math.random() > 0.5;
+    const isWire = Math.random() > 0.56;
     const mat = isWire
       ? new THREE.MeshBasicMaterial({
-          color: new THREE.Color().setHSL(0.55 + Math.random() * 0.2, 0.9, 0.6),
-          wireframe: true,
-          transparent: true,
-          opacity: 0.18,
-          depthWrite: false
+          color: new THREE.Color().setHSL(0.54 + Math.random() * 0.18, 0.88, 0.62),
+          wireframe: true, transparent: true, opacity: 0.16, depthWrite: false
         })
       : new THREE.MeshPhysicalMaterial({
-          color: 0x0a0e1a,
-          metalness: 0.2,
-          roughness: 0.1,
-          transmission: 0.6,
-          transparent: true,
-          opacity: 0.5,
-          clearcoat: 1,
-          clearcoatRoughness: 0.15
+          color: 0x0b1020, metalness: 0.18, roughness: 0.12, transmission: 0.62,
+          transparent: true, opacity: 0.46, clearcoat: 1, clearcoatRoughness: 0.14
         });
     const mesh = new THREE.Mesh(geo, mat);
+    // Distribute in depth layers for parallax illusion
+    const layer = i % 3; // 0 near, 1 mid, 2 far
+    const z = -3.5 - layer * 5.5 - Math.random() * 4.5;
+    const spreadX = 13 + layer * 4;
+    const spreadY = 22 + layer * 6;
     mesh.position.set(
-      (Math.random() - 0.5) * 26,
-      (Math.random() - 0.5) * 40,
-      -2 - Math.random() * 16
+      (Math.random() - 0.5) * spreadX * 2,
+      (Math.random() - 0.5) * spreadY,
+      z
     );
-    const s = 0.5 + Math.random() * 1.4;
-    mesh.scale.setScalar(s);
+    const s = 0.55 + Math.random() * 1.15 - layer * 0.08;
+    mesh.scale.setScalar(Math.max(0.35, s));
     mesh.userData = {
-      rotSpeed: new THREE.Vector3(
-        (Math.random() - 0.5) * 0.01,
-        (Math.random() - 0.5) * 0.01,
-        (Math.random() - 0.5) * 0.01
-      ),
+      rotSpeed: new THREE.Vector3((Math.random() - 0.5) * 0.008, (Math.random() - 0.5) * 0.008, (Math.random() - 0.5) * 0.007),
       floatPhase: Math.random() * Math.PI * 2,
-      floatSpeed: 0.3 + Math.random() * 0.5,
-      baseY: mesh.position.y
+      floatSpeed: 0.22 + Math.random() * 0.38,
+      baseY: mesh.position.y,
+      baseX: mesh.position.x,
+      layer
     };
     ambientShapes.push(mesh);
     ambientGroup.add(mesh);
   }
 
-  // ----------------------------------------------------------------
-  // Particle field (clean, sparse)
-  // ----------------------------------------------------------------
-  const particleCount = 220;
+  // Particles — sparser, more premium
+  const particleCount = window.innerWidth < 768 ? 120 : 190;
   const particleGeometry = new THREE.BufferGeometry();
   const particlePositions = new Float32Array(particleCount * 3);
   const particleColors = new Float32Array(particleCount * 3);
   for (let i = 0; i < particleCount; i++) {
-    const r = 4 + Math.random() * 18;
+    const r = 4.2 + Math.random() * 16;
     const theta = Math.random() * Math.PI * 2;
     const phi = Math.acos(2 * Math.random() - 1);
     particlePositions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-    particlePositions[i * 3 + 1] = (Math.random() - 0.5) * 50;
-    particlePositions[i * 3 + 2] = -Math.random() * 20;
-    const color = new THREE.Color().setHSL(0.55 + Math.random() * 0.2, 0.9, 0.6);
-    particleColors[i * 3] = color.r;
-    particleColors[i * 3 + 1] = color.g;
-    particleColors[i * 3 + 2] = color.b;
+    particlePositions[i * 3 + 1] = (Math.random() - 0.5) * 52;
+    particlePositions[i * 3 + 2] = -Math.random() * 18 - 1.5;
+    const c = new THREE.Color().setHSL(0.54 + Math.random() * 0.18, 0.88, 0.62);
+    particleColors[i * 3] = c.r; particleColors[i * 3 + 1] = c.g; particleColors[i * 3 + 2] = c.b;
   }
   particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
   particleGeometry.setAttribute('color', new THREE.BufferAttribute(particleColors, 3));
   const particleMaterial = new THREE.PointsMaterial({
-    size: 0.05,
-    vertexColors: true,
-    transparent: true,
-    opacity: 0.6,
-    sizeAttenuation: true,
-    blending: THREE.AdditiveBlending,
-    depthWrite: false
+    size: 0.048, vertexColors: true, transparent: true, opacity: 0.58,
+    sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false
   });
   const particles = new THREE.Points(particleGeometry, particleMaterial);
   scene.add(particles);
 
-  // Apply the saved theme now that all materials exist
+  // Theme adaptation
+  const initialTheme = (typeof localStorage !== 'undefined' && localStorage.getItem('copc-theme')) || document.documentElement.getAttribute('data-theme') || 'dark';
+  function applySceneTheme(theme) {
+    const light = theme === 'light';
+    scene.fog.color.set(light ? 0xf6f7fb : 0x06080f);
+    scene.fog.near = 0; scene.fog.far = 0;
+    // Recreate fog with correct density
+    scene.fog = new THREE.FogExp2(light ? 0xf6f7fb : 0x06080f, light ? 0.019 : 0.028);
+    coreMaterial.color.set(light ? 0x15203a : 0x0a0e1a);
+    coreMaterial.attenuationColor.set(light ? 0x0891b2 : 0x00e5ff);
+    coreMaterial.emissive.set(light ? 0x0d2329 : 0x031b1f);
+    keyLight.intensity = light ? 38 : 62;
+    fillLight.intensity = light ? 28 : 46;
+    keyLight.color.set(light ? 0x0891b2 : 0x00e5ff);
+    fillLight.color.set(light ? 0x6d28d9 : 0x7c3aed);
+    ambientShapes.forEach((m) => {
+      if (m.material.wireframe) m.material.color.set(light ? 0x0891b2 : 0x00e5ff);
+      else if (m.material.isMeshPhysicalMaterial) {
+        m.material.color.set(light ? 0x2a3656 : 0x0b1020);
+        m.material.attenuationColor?.set?.(light ? 0x0891b2 : 0x00e5ff);
+      }
+    });
+    particleMaterial.blending = light ? THREE.NormalBlending : THREE.AdditiveBlending;
+    particleMaterial.opacity = light ? 0.42 : 0.58;
+    shellMaterial.color.set(light ? 0x0891b2 : 0x00e5ff);
+    shellMaterial.opacity = light ? 0.07 : 0.10;
+    ringA.material.color.set(light ? 0x0891b2 : 0x00e5ff);
+    ringB.material.color.set(light ? 0x6d28d9 : 0x7c3aed);
+    if (heroTextMat) {
+      heroTextMat.color.set(light ? 0x0e7c8a : 0x00e5ff);
+      heroTextMat.emissive.set(light ? 0x07343a : 0x031b1f);
+      heroTextMat.emissiveIntensity = light ? 0.18 : 0.38;
+      heroTextMat.roughness = light ? 0.32 : 0.14;
+    }
+  }
   applySceneTheme(initialTheme);
+  window.addEventListener('themechange', (e) => { if (e.detail?.theme) applySceneTheme(e.detail.theme); });
 
-  // ----------------------------------------------------------------
-  // Interaction — pointer parallax + scroll travel
-  // ----------------------------------------------------------------
+  // Interaction — pointer parallax + scroll
   let mouseX = 0, mouseY = 0, targetX = 0, targetY = 0;
-  const onPointer = (cx, cy) => {
-    mouseX = (cx / window.innerWidth) * 2 - 1;
-    mouseY = -(cy / window.innerHeight) * 2 + 1;
-  };
+  const onPointer = (cx, cy) => { mouseX = (cx / window.innerWidth) * 2 - 1; mouseY = -(cy / window.innerHeight) * 2 + 1; };
   document.addEventListener('mousemove', (e) => onPointer(e.clientX, e.clientY), { passive: true });
-  document.addEventListener('touchmove', (e) => {
-    if (e.touches.length) onPointer(e.touches[0].clientX, e.touches[0].clientY);
-  }, { passive: true });
+  document.addEventListener('touchmove', (e) => { if (e.touches.length) onPointer(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
 
   let scrollNorm = 0;
   const updateScroll = () => {
@@ -314,90 +233,78 @@ function initGlobalScene() {
   window.addEventListener('scroll', updateScroll, { passive: true });
   updateScroll();
 
-  // ----------------------------------------------------------------
-  // Animation loop
-  // ----------------------------------------------------------------
   const clock = new THREE.Clock();
   function animate() {
     requestAnimationFrame(animate);
     if (document.hidden) return;
-
     const t = clock.getElapsedTime();
 
-    // Smooth pointer follow
-    targetX += (mouseX - targetX) * 0.04;
-    targetY += (mouseY - targetY) * 0.04;
+    targetX += (mouseX - targetX) * 0.035;
+    targetY += (mouseY - targetY) * 0.035;
 
-    // Hero crystal: calm rotation, fades out as you leave the hero
-    core.rotation.x = t * 0.15;
-    core.rotation.y = t * 0.2;
-    shell.rotation.y = -t * 0.08;
-    shell.rotation.z = t * 0.05;
-    ringA.rotation.z = t * 0.3;
-    ringB.rotation.z = -t * 0.22;
-    ringGroupRotate(heroGroup, t);
-    const heroFade = Math.max(0, 1 - window.scrollY / 600);
-    const heroVisible = heroFade > 0.02;
-    core.visible = heroVisible;
-    shell.visible = heroVisible;
-    ringA.visible = heroVisible;
-    ringB.visible = heroVisible;
+    // Hero crystal — calm, premium rotation
+    core.rotation.x = t * 0.12;
+    core.rotation.y = t * 0.16;
+    shell.rotation.y = -t * 0.06;
+    shell.rotation.z = t * 0.035;
+    ringA.rotation.z = t * 0.26;
+    ringB.rotation.z = -t * 0.19;
+    heroGroup.rotation.y = t * 0.07 + targetX * 0.15;
+    heroGroup.rotation.x = targetY * 0.08;
+
+    const heroFade = Math.max(0, 1 - window.scrollY / 620);
+    const heroVisible = heroFade > 0.015;
+    core.visible = heroVisible; shell.visible = heroVisible; ringA.visible = heroVisible; ringB.visible = heroVisible;
+    if (heroText) heroText.visible = heroVisible;
     coreMaterial.opacity = heroFade;
-    shellMaterial.opacity = 0.12 * heroFade;
-    ringA.material.opacity = 0.4 * heroFade;
-    ringB.material.opacity = 0.4 * heroFade;
+    shellMaterial.opacity = (document.documentElement.getAttribute('data-theme') === 'light' ? 0.07 : 0.10) * heroFade;
+    ringA.material.opacity = 0.38 * heroFade;
+    ringB.material.opacity = 0.38 * heroFade;
 
-    // Real 3D text: tilt toward the pointer, gentle float, fade with scroll
-    if (heroText) {
-      heroText.visible = heroVisible;
-      heroText.rotation.y = targetX * 0.5 + Math.sin(t * 0.6) * 0.06;
-      heroText.rotation.x = -targetY * 0.35 + Math.sin(t * 0.5) * 0.04;
-      heroText.position.y = 0.2 + Math.sin(t * 0.8) * 0.12;
-      heroTextMat.opacity = heroFade;
-      heroTextMat.transparent = true;
+    if (heroText && heroTextMat) {
+      heroText.rotation.y = targetX * 0.42 + Math.sin(t * 0.55) * 0.05;
+      heroText.rotation.x = -targetY * 0.28 + Math.sin(t * 0.45) * 0.03;
+      heroText.position.y = 0.18 + Math.sin(t * 0.72) * 0.10;
+      heroTextMat.opacity = heroFade; heroTextMat.transparent = true;
     }
 
-    // Ambient shapes: slow spin + float, gentle parallax travel with scroll
-    ambientGroup.position.y = scrollNorm * 8;
+    // Ambient — layer-aware parallax
+    ambientGroup.position.y = scrollNorm * 7.5;
+    ambientGroup.rotation.y = targetX * 0.06;
+    ambientGroup.rotation.x = -targetY * 0.04;
     ambientShapes.forEach((m) => {
       const u = m.userData;
       m.rotation.x += u.rotSpeed.x;
       m.rotation.y += u.rotSpeed.y;
       m.rotation.z += u.rotSpeed.z;
-      m.position.y = u.baseY + Math.sin(t * u.floatSpeed + u.floatPhase) * 0.6;
+      // Depth-aware float + parallax drift
+      const parallaxFactor = 1 - u.layer * 0.22;
+      m.position.y = u.baseY + Math.sin(t * u.floatSpeed + u.floatPhase) * 0.55 * parallaxFactor;
+      m.position.x = u.baseX + Math.sin(t * 0.22 + u.floatPhase * 0.7) * 0.22 * parallaxFactor;
     });
 
-    // Particles drift
-    particles.rotation.y = t * 0.02;
+    particles.rotation.y = t * 0.015;
+    particles.rotation.x = targetY * 0.04;
+    particles.position.y = scrollNorm * 1.2;
 
-    // Camera parallax + subtle scroll dolly
-    camera.position.x += (targetX * 1.6 - camera.position.x) * 0.03;
-    camera.position.y += (targetY * 1.6 - camera.position.y) * 0.03;
-    camera.position.z = 12 - scrollNorm * 2;
-    camera.lookAt(0, 0, 0);
+    // Camera — gentle dolly + parallax
+    camera.position.x += (targetX * 1.25 - camera.position.x) * 0.025;
+    camera.position.y += (targetY * 1.05 + 0.35 - camera.position.y) * 0.025;
+    camera.position.z = 11.5 - scrollNorm * 1.4;
+    camera.lookAt(0, 0.15, 0);
 
     renderer.render(scene, camera);
   }
   animate();
 
-  function ringGroupRotate(g, t) {
-    g.rotation.y = t * 0.1;
-  }
-
-  // ----------------------------------------------------------------
-  // Resize
-  // ----------------------------------------------------------------
   window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.9));
     updateScroll();
   }, { passive: true });
 
-  // ----------------------------------------------------------------
-  // Cleanup
-  // ----------------------------------------------------------------
   window.addEventListener('beforeunload', () => {
     renderer.dispose();
     coreGeometry.dispose(); coreMaterial.dispose();

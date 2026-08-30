@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CoPC — BUP Computer Programming Club</title>
     <meta name="description" content="Official website of CoPC - BUP Computer Programming Club. Code, Compete, Conquer.">
+    <meta name="theme-color" content="#06080f">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="icon" href="https://bup.edu.bd/public/images/logo/favicon.ico">
-    <!-- Three.js for 3D graphicsdesign -->
     <script type="importmap">
     {
       "imports": {
@@ -20,14 +22,16 @@
 </head>
 <body>
 
-    <canvas id="bg-3d"></canvas>
+    <canvas id="bg-3d" aria-hidden="true"></canvas>
+    <div class="aurora" aria-hidden="true"><div class="aurora-orb aurora-orb-1"></div><div class="aurora-orb aurora-orb-2"></div><div class="aurora-orb aurora-orb-3"></div></div>
+    <div class="bg-grid" aria-hidden="true"></div>
 
-    <div id="cursor-glow"></div>
+    <div id="cursor-glow" aria-hidden="true"></div>
 
     <div id="lightbox" role="dialog" aria-modal="true" aria-label="Image gallery"><button class="lightbox-close" aria-label="Close">&times;</button><img src="" alt="Gallery Image"></div>
 
     <nav id="navbar">
-      <a href="#hero" class="nav-logo">{ CoPC }</a>
+      <a href="#hero" class="nav-logo" aria-label="CoPC Home">{ CoPC }</a>
       <ul class="nav-links">
         <li><a href="#hero" class="nav-link nav-active">Home</a></li>
         <li><a href="#about" class="nav-link">About</a></li>
@@ -68,22 +72,29 @@
     </nav>
 
     <section id="hero">
-      <canvas id="matrix-canvas"></canvas>
-      <canvas id="particles-canvas"></canvas>
+      <canvas id="matrix-canvas" aria-hidden="true"></canvas>
+      <canvas id="particles-canvas" aria-hidden="true"></canvas>
       <div class="hero-content">
-        <div class="hero-badge">&lt; Department of CSE, BUP /&gt;</div>
+        <div class="hero-badge"><span>●</span> Department of CSE, BUP</div>
         <h1 class="hero-title">BUP Computer<br><span class="gradient-text">Programming Club</span></h1>
         <p class="hero-motto">&gt; <span id="typewriter"></span></p>
+        <p class="hero-sub">A young club with serious ambition — we learn by shipping, compete to grow, and conquer together.</p>
         <div class="hero-buttons">
           <a href="#events" class="cta-btn cta-btn-primary"><i class="fas fa-rocket"></i> Explore Events</a>
-          <a href="https://www.facebook.com/bupcopc" target="_blank" class="cta-btn cta-btn-outline"><i class="fab fa-facebook"></i> Join Us</a>
+          <a href="https://www.facebook.com/bupcopc" target="_blank" rel="noopener" class="cta-btn cta-btn-outline"><i class="fab fa-facebook"></i> Join Us on Facebook</a>
+        </div>
+        <div class="hero-stats" aria-label="Club highlights">
+          <span class="hero-stat"><i class="fas fa-calendar-check"></i> Founded Jan 2024</span>
+          <span class="hero-stat"><i class="fas fa-users"></i> 500+ Community</span>
+          <span class="hero-stat"><i class="fas fa-trophy"></i> ৳1.1L Prize Pool</span>
         </div>
       </div>
-      <div class="scroll-indicator"><span></span></div>
+      <a href="#about" class="scroll-indicator" aria-label="Scroll to content"><span></span></a>
     </section>
 
     <section id="about" class="section">
       <div class="section-header">
+        <div class="eyebrow">Who we are</div>
         <h2 class="section-title">About <span class="gradient-text">CoPC</span></h2>
         <p class="section-subtitle">The BUP Computer Programming Club, founded in January 2024, is dedicated to advancing knowledge in computer science and cybersecurity. With the motto "Code, Compete, Conquer" the club offers interactive workshops, competitions, and mentorship to bridge theoretical learning with practical application.</p>
         <div class="section-divider"></div>
@@ -134,15 +145,15 @@
 
     <section id="events" class="section">
       <div class="section-header">
+        <div class="eyebrow">Flagship events</div>
         <h2 class="section-title">Our <span class="gradient-text">Events</span></h2>
         <p class="section-subtitle">From competitive programming to hackathons, we bring the best tech events to BUP.</p>
         <div class="section-divider"></div>
       </div>
       <div class="events-grid">
-        <!-- Event 1: Tech Carnival -->
         <div class="glass-card event-card tilt-card glow-border reveal reveal-up">
           <div class="event-image-wrapper">
-            <img class="event-image" src="https://bup.edu.bd/public/upload/news/20250930_1759207764.jpg" alt="BUP CSE Tech Carnival 2025" loading="lazy" onerror="this.remove()">
+            <img class="event-image" src="https://bup.edu.bd/public/upload/news/20250930_1759207764.jpg" alt="BUP CSE Tech Carnival 2025" loading="lazy" onerror="this.style.display='none'">
           </div>
           <div class="event-content">
             <div class="event-date">📅 Sep 24-25, 2025</div>
@@ -156,10 +167,9 @@
             </div>
           </div>
         </div>
-        <!-- Event 2: Higher Studies -->
         <div class="glass-card event-card tilt-card glow-border reveal reveal-up">
           <div class="event-image-wrapper">
-            <img class="event-image" src="https://bup.edu.bd/public/upload/news/20250602_1748851316.jpg" alt="Higher Studies Lecture" loading="lazy" onerror="this.remove()">
+            <img class="event-image" src="https://bup.edu.bd/public/upload/news/20250602_1748851316.jpg" alt="Higher Studies Lecture" loading="lazy" onerror="this.style.display='none'">
           </div>
           <div class="event-content">
             <div class="event-date">📅 May 22, 2025</div>
@@ -172,10 +182,9 @@
             </div>
           </div>
         </div>
-        <!-- Event 3: GP Collaboration -->
         <div class="glass-card event-card tilt-card glow-border reveal reveal-up">
           <div class="event-image-wrapper">
-            <img class="event-image" src="https://bup.edu.bd/public/upload/news/20260616_1781594132.jpeg" alt="BUP Grameenphone Collaboration" loading="lazy" onerror="this.remove()">
+            <img class="event-image" src="https://bup.edu.bd/public/upload/news/20260616_1781594132.jpeg" alt="BUP Grameenphone Collaboration" loading="lazy" onerror="this.style.display='none'">
           </div>
           <div class="event-content">
             <div class="event-date">📅 Jun 14, 2026</div>
@@ -193,6 +202,7 @@
 
     <section id="activities" class="section">
       <div class="section-header">
+        <div class="eyebrow">What we build</div>
         <h2 class="section-title">What We <span class="gradient-text">Do</span></h2>
         <p class="section-subtitle">Bridging the gap between theory and practice through hands-on tech activities.</p>
         <div class="section-divider"></div>
@@ -233,6 +243,7 @@
 
     <section id="team" class="section">
       <div class="section-header">
+        <div class="eyebrow">Humans of CoPC</div>
         <h2 class="section-title">Our <span class="gradient-text">Team</span></h2>
         <p class="section-subtitle">The dedicated people behind CoPC who make it all happen.</p>
         <div class="section-divider"></div>
@@ -261,33 +272,34 @@
 
     <section id="gallery-section" class="section">
       <div class="section-header">
+        <div class="eyebrow">Moments</div>
         <h2 class="section-title">Photo <span class="gradient-text">Gallery</span></h2>
         <p class="section-subtitle">Moments from our events and activities.</p>
         <div class="section-divider"></div>
       </div>
       <div class="gallery-grid">
         <div class="gallery-item reveal reveal-up">
-          <img src="https://bup.edu.bd/public/upload/slider/20230210_1676004771794.jpg" alt="BUP Campus" loading="lazy" onerror="this.remove()">
+          <img src="https://bup.edu.bd/public/upload/slider/20230210_1676004771794.jpg" alt="BUP Campus" loading="lazy" onerror="this.style.display='none'">
           <div class="gallery-overlay"><p>BUP Campus</p></div>
         </div>
         <div class="gallery-item reveal reveal-up">
-          <img src="https://bup.edu.bd/public/upload/news/20250930_1759207764.jpg" alt="Tech Carnival 2025" loading="lazy" onerror="this.remove()">
+          <img src="https://bup.edu.bd/public/upload/news/20250930_1759207764.jpg" alt="Tech Carnival 2025" loading="lazy" onerror="this.style.display='none'">
           <div class="gallery-overlay"><p>Tech Carnival 2025</p></div>
         </div>
         <div class="gallery-item reveal reveal-up">
-          <img src="https://bup.edu.bd/public/upload/slider/20250423_1745389393848.JPG" alt="Club Activities" loading="lazy" onerror="this.remove()">
+          <img src="https://bup.edu.bd/public/upload/slider/20250423_1745389393848.JPG" alt="Club Activities" loading="lazy" onerror="this.style.display='none'">
           <div class="gallery-overlay"><p>Club Activities</p></div>
         </div>
         <div class="gallery-item reveal reveal-up">
-          <img src="https://bup.edu.bd/public/upload/news/20250602_1748851316.jpg" alt="Higher Studies Seminar" loading="lazy" onerror="this.remove()">
+          <img src="https://bup.edu.bd/public/upload/news/20250602_1748851316.jpg" alt="Higher Studies Seminar" loading="lazy" onerror="this.style.display='none'">
           <div class="gallery-overlay"><p>Higher Studies Seminar</p></div>
         </div>
         <div class="gallery-item reveal reveal-up">
-          <img src="https://bup.edu.bd/public/upload/news/20260616_1781594132.jpeg" alt="GP Collaboration" loading="lazy" onerror="this.remove()">
+          <img src="https://bup.edu.bd/public/upload/news/20260616_1781594132.jpeg" alt="GP Collaboration" loading="lazy" onerror="this.style.display='none'">
           <div class="gallery-overlay"><p>GP Collaboration</p></div>
         </div>
         <div class="gallery-item reveal reveal-up">
-          <img src="https://bup.edu.bd/public/upload/banner/20230313_1678702875.png" alt="BUP CSE Department" loading="lazy" onerror="this.remove()">
+          <img src="https://bup.edu.bd/public/upload/banner/20230313_1678702875.png" alt="BUP CSE Department" loading="lazy" onerror="this.style.display='none'">
           <div class="gallery-overlay"><p>BUP CSE Department</p></div>
         </div>
       </div>
@@ -295,6 +307,7 @@
 
     <section id="why-join" class="section">
       <div class="section-header">
+        <div class="eyebrow">Membership</div>
         <h2 class="section-title">Why Join <span class="gradient-text">CoPC</span></h2>
         <p class="section-subtitle">More than a club — a launchpad for your tech career. Here's what you gain as a member of the BUP Computer Programming Club.</p>
         <div class="section-divider"></div>
@@ -335,6 +348,7 @@
 
     <section id="timeline" class="section">
       <div class="section-header">
+        <div class="eyebrow">Roadmap</div>
         <h2 class="section-title">Events <span class="gradient-text">Timeline</span></h2>
         <p class="section-subtitle">What's coming up and what we've shipped — a quick look at our event roadmap.</p>
         <div class="section-divider"></div>
@@ -365,6 +379,7 @@
           </div>
         </div>
         <div class="timeline-item reveal reveal-up">
+          <div class="timeline-dot"></div>
           <div class="timeline-date">Sep 2025</div>
           <div class="glass-card timeline-card">
             <h3 class="timeline-title">BUP CSE Tech Carnival</h3>
@@ -376,6 +391,7 @@
 
     <section id="achievements" class="section">
       <div class="section-header">
+        <div class="eyebrow">Impact</div>
         <h2 class="section-title">Our <span class="gradient-text">Achievements</span></h2>
         <p class="section-subtitle">A young club with a fast-growing track record since 2024.</p>
         <div class="section-divider"></div>
@@ -410,6 +426,7 @@
 
     <section id="testimonials" class="section">
       <div class="section-header">
+        <div class="eyebrow">Social proof</div>
         <h2 class="section-title">What People <span class="gradient-text">Say</span></h2>
         <p class="section-subtitle">Words from our members, alumni and partners about the CoPC experience.</p>
         <div class="section-divider"></div>
@@ -441,6 +458,7 @@
 
     <section id="faq" class="section">
       <div class="section-header">
+        <div class="eyebrow">Support</div>
         <h2 class="section-title">Frequently Asked <span class="gradient-text">Questions</span></h2>
         <p class="section-subtitle">Everything you need to know before joining the BUP Computer Programming Club.</p>
         <div class="section-divider"></div>
@@ -471,6 +489,7 @@
 
     <section id="newsletter" class="section">
       <div class="section-header">
+        <div class="eyebrow">Updates</div>
         <h2 class="section-title">Stay In The <span class="gradient-text">Loop</span></h2>
         <p class="section-subtitle">Subscribe for event alerts, workshop drops and CoPC highlights — no spam, just tech.</p>
         <div class="section-divider"></div>
@@ -486,6 +505,7 @@
 
     <section id="learn" class="section">
       <div class="section-header">
+        <div class="eyebrow">Tracks</div>
         <h2 class="section-title">Start Your <span class="gradient-text">Journey</span></h2>
         <p class="section-subtitle">Pick a track and grow with the club — guided paths and hands-on learning for every interest.</p>
         <div class="section-divider"></div>
@@ -520,6 +540,7 @@
 
     <section id="sponsors" class="section">
       <div class="section-header">
+        <div class="eyebrow">Ecosystem</div>
         <h2 class="section-title">Our <span class="gradient-text">Partners & Sponsors</span></h2>
         <div class="section-divider"></div>
       </div>
@@ -548,6 +569,7 @@
 
     <section id="contact" class="section">
       <div class="section-header">
+        <div class="eyebrow">Reach us</div>
         <h2 class="section-title">Get In <span class="gradient-text">Touch</span></h2>
         <div class="section-divider"></div>
       </div>
@@ -570,14 +592,14 @@
             <div><h4>Under</h4><p>Department of CSE, Faculty of Science & Technology, BUP</p></div>
           </div>
           <div class="social-links">
-            <a href="https://www.facebook.com/bupcopc" target="_blank" class="social-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-            <a href="https://bup.edu.bd" target="_blank" class="social-link" aria-label="Website"><i class="fas fa-globe"></i></a>
+            <a href="https://www.facebook.com/bupcopc" target="_blank" rel="noopener" class="social-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://bup.edu.bd" target="_blank" rel="noopener" class="social-link" aria-label="Website"><i class="fas fa-globe"></i></a>
           </div>
         </div>
         <div class="glass-card join-card reveal reveal-right">
           <h3>Join <span class="gradient-text">CoPC</span> Today!</h3>
           <p>Are you a BUP student passionate about programming, cybersecurity, or technology? Join our community of coders, innovators, and tech enthusiasts. Together, we Code, Compete, and Conquer!</p>
-          <a href="https://www.facebook.com/bupcopc" target="_blank" class="cta-btn cta-btn-primary"><i class="fab fa-facebook"></i> Join on Facebook</a>
+          <a href="https://www.facebook.com/bupcopc" target="_blank" rel="noopener" class="cta-btn cta-btn-primary"><i class="fab fa-facebook"></i> Join on Facebook</a>
         </div>
       </div>
     </section>
@@ -588,8 +610,8 @@
           <a href="#hero" class="footer-logo">{ CoPC }</a>
           <p class="footer-text">The BUP Computer Programming Club — Code, Compete, Conquer. Building the next generation of technologists at BUP.</p>
           <div class="footer-socials">
-            <a href="https://www.facebook.com/bupcopc" target="_blank" class="social-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-            <a href="https://bup.edu.bd" target="_blank" class="social-link" aria-label="Website"><i class="fas fa-globe"></i></a>
+            <a href="https://www.facebook.com/bupcopc" target="_blank" rel="noopener" class="social-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://bup.edu.bd" target="_blank" rel="noopener" class="social-link" aria-label="Website"><i class="fas fa-globe"></i></a>
           </div>
         </div>
         <div class="footer-col">
@@ -617,13 +639,13 @@
           <ul class="footer-links">
             <li><a href="mailto:info@bup.edu.bd">info@bup.edu.bd</a></li>
             <li><a href="#contact">Get In Touch</a></li>
-            <li><a href="https://www.facebook.com/bupcopc" target="_blank">Facebook</a></li>
+            <li><a href="https://www.facebook.com/bupcopc" target="_blank" rel="noopener">Facebook</a></li>
           </ul>
         </div>
       </div>
       <div class="footer-bottom">
         <p class="footer-text">© 2024-2026 BUP Computer Programming Club. All rights reserved.</p>
-        <p class="footer-text">Made with <span class="footer-heart">❤</span> by CoPC</p>
+        <p class="footer-text">Made with <span class="footer-heart">❤</span> by CoPC — crafted for builders.</p>
       </div>
     </footer>
 
