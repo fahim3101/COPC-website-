@@ -679,7 +679,9 @@ body::after{
   max-width:1240px; margin:2.2rem auto 0; padding-top:1.4rem; border-top:1px solid var(--card-border);
   display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; color: var(--text-muted); font-size:0.85rem;
 }
-.footer-heart{color: var(--accent-pink)}
+.footer-heart{color: var(--accent-pink); display:inline-block; margin:0 0.15rem; animation: heartPulse 1.6s ease infinite; filter: drop-shadow(0 0 6px rgba(255,46,126,0.35))}
+.footer-credit{color: var(--text); font-weight:600; letter-spacing:-0.015em; font-family:'Space Grotesk',sans-serif}
+@keyframes heartPulse{0%,100%{transform: scale(1)}50%{transform: scale(1.14)}}
 
 /* ============================================================
    LIGHT MODE — component polish (user-friendly paper)
