@@ -1,0 +1,21 @@
+{
+  "name": "copc-website",
+  "version": "1.0.0",
+  "description": "BUP Computer Programming Club — official website with AI assistant (Groq)",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "dev:vercel": "vercel dev",
+    "start": "node server.js",
+    "preview": "npx serve ."
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "serve": "^14.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
